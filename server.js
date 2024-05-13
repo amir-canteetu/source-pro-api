@@ -52,10 +52,12 @@ app.get("/api/tenders", async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   const offset = (page - 1) * limit;
 
+  console.log(req.query);
+
   try {
     const results = await knex("tenders")
       .select("*")
-      .orderBy(req.query.sortBy || "tender_id", req.query.sortOrder || "ASC")
+      .orderBy(req.query.sortBy || "id", req.query.sortOrder || "ASC")
       .where((builder) => {
         if (req.query.location) {
           builder.where("location", req.query.location);
@@ -63,6 +65,8 @@ app.get("/api/tenders", async (req, res) => {
       })
       .limit(limit)
       .offset(offset);
+
+    console.log(results);
 
     res.json(results);
   } catch (error) {
@@ -78,7 +82,7 @@ app.get("/api/tenders/:id", async (req, res) => {
   try {
     const tender = await knex("tenders")
       .select("*")
-      .where("tender_id", tenderId)
+      .where("id", tenderId)
       .first();
 
     if (!tender) {
@@ -92,67 +96,81 @@ app.get("/api/tenders/:id", async (req, res) => {
   }
 });
 
-// Partially update a specific tender by ID
-app.patch("/api/tenders/:id", (req, res) => {
+// UPDATE a specific tender by ID
+app.patch("/api/tenders/:id", async (req, res) => {
   const tenderId = req.params.id;
   const updates = req.body;
 
+  console.log(typeof updates);
+  console.log(updates);
+
   // Validate if there are any updates to apply
   if (Object.keys(updates).length === 0) {
-    res.status(400).json({ error: "No updates provided" });
-    return;
+    return res.status(400).json({ error: "No updates provided" });
   }
 
-  // Construct SQL query to update tender fields based on provided updates
-  const updateFields = [];
-  const values = [];
+  try {
+    // Construct SQL query to update tender fields based on provided updates
+    const updateFields = [];
+    const values = [];
 
-  for (const key in updates) {
-    updateFields.push(`${key} = ?`);
-    values.push(updates[key]);
+    for (const key in updates) {
+      updateFields.push(`${key} = ?`);
+      values.push(updates[key]);
+    }
+
+    console.log("values...");
+    console.log(values);
+    console.log("updates...");
+    console.log(updates);
+    console.log("updateFields...");
+    console.log(updateFields);
+
+    const updateQuery = knex("tenders").where({ id: tenderId }).update(updates);
+
+    console.log("updateQuery...");
+    console.log(updateQuery);
+
+    // Execute the SQL query to update the tender
+    const result = await updateQuery;
+
+    console.log("result...");
+    console.log(result);
+
+    if (result === 0) {
+      return res.status(404).json({ error: "Tender not found" });
+    }
+
+    return res.json({ message: "Tender updated successfully" });
+  } catch (err) {
+    console.error("Error updating tender:", err);
+    return res.status(500).json({ error: "Failed to update tender" });
   }
-
-  const updateQuery = `
-        UPDATE tenders
-        SET ${updateFields.join(", ")}
-        WHERE tender_id = ?
-      `;
-  values.push(tenderId); // Add tenderId to the end of values array
-
-  // Execute the SQL query to update the tender
-  connection.query(updateQuery, values, (err, result) => {
-    if (err) {
-      console.error("Error updating tender:", err);
-      res.status(500).json({ error: "Failed to update tender" });
-      return;
-    }
-
-    if (result.affectedRows === 0) {
-      res.status(404).json({ error: "Tender not found" });
-    } else {
-      res.json({ message: "Tender updated successfully" });
-    }
-  });
 });
 
-app.delete("/api/tenders/:id", (req, res) => {
+app.delete("/api/tenders/:id", async (req, res) => {
   const tenderId = req.params.id;
-  connection.query(
-    "DELETE FROM tenders WHERE tender_id = ?",
-    [tenderId],
-    (err, result) => {
-      if (err) {
-        console.error("Error deleting tender:", err);
-        res.status(500).json({ error: "Failed to delete tender" });
-        return;
-      }
-      if (result.affectedRows === 0) {
-        res.status(404).json({ error: "Tender not found" });
-        return;
-      }
-      res.json({ message: "Tender deleted successfully" });
+
+  try {
+    // Construct SQL query to update tender_status to NULL
+    const updateQuery = knex("tenders")
+      .where({ id: tenderId })
+      .update({ tender_status: "deleted" });
+
+    // Execute the SQL query to update the tender_status
+    const result = await updateQuery;
+
+    if (result === 0) {
+      return res.status(404).json({ error: "Tender not found" });
     }
-  );
+
+    return res.json({ message: "Tender deleted successfully" });
+  } catch (err) {
+    console.error("Error updating tender status:", err);
+    return res
+      .status(500)
+      .json({ error: "Failed to update tender status", message: err });
+  }
 });
 
 ///////////////////////////End Of TENDERS///////////////////
