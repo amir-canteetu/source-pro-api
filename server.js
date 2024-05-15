@@ -175,122 +175,180 @@ app.delete("/api/tenders/:id", async (req, res) => {
 
 ///////////////////////////End Of TENDERS///////////////////
 
-///////////////////////////BIDS/////////////////////////
+///////////////////////////USERS/////////////////////////
 
-// Retrieve ALL bids
-app.get("/api/bids", (req, res) => {
-  connection.query("SELECT * FROM bids", (err, results) => {
-    if (err) {
-      console.error("Error fetching bids:", err);
-      res.status(500).json({ error: "Failed to fetch bids" });
-      return;
+//Create a user
+app.post("/api/users", async (req, res) => {
+  try {
+    const newUser = req.body;
+
+    // Use Knex to perform the insertion
+    const [insertedUser] = await knex("users").insert(newUser);
+
+    res.status(201).json({
+      message: "User created successfully",
+      id: insertedUser,
+    });
+  } catch (err) {
+    console.error("Error creating user:", err);
+    res.status(500).json({ error: "Failed to create user" });
+  }
+});
+
+app.post("/api/users/register", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Check if user with the provided email already exists
+    const existingUser = await knex('users').where({ email }).first();
+    if (existingUser) {
+      return res.status(400).json({ error: 'User already exists' });
     }
+
+    // Hash the password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // Create new user
+    await knex('users').insert({ email, password_hash: passwordHash });
+
+    res.json({ message: 'User registered successfully' });
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// READ ALL users --  with pagination, sorting, and filtering
+app.get("/api/users", async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const offset = (page - 1) * limit;
+
+  try {
+    const results = await knex("users")
+      .select("*")
+      .orderBy(req.query.sortBy || "id", req.query.sortOrder || "ASC")
+      .where((builder) => {
+        if (req.query.location) {
+          builder.where("location", req.query.location);
+        }
+      })
+      .limit(limit)
+      .offset(offset);
+
     res.json(results);
-  });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
 });
 
-// Retrieve a specific bid by ID
-app.get("/api/bids/:id", (req, res) => {
-  const bidId = req.params.id;
-  connection.query(
-    "SELECT * FROM bids WHERE bid_id = ?",
-    bidId,
-    (err, results) => {
-      if (err) {
-        console.error("Error fetching bid:", err);
-        res.status(500).json({ error: "Failed to fetch bid" });
-        return;
-      }
-      if (results.length === 0) {
-        res.status(404).json({ error: "Bid not found" });
-      } else {
-        res.json(results[0]);
-      }
+// READ a single user by ID
+app.get("/api/users/:id", async (req, res) => {
+
+  const userId = req.params.id;
+
+  try {
+    const user = await knex("users")
+      .select("*")
+      .where("id", userId)
+      .first();
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
-  );
+
+    res.json(user);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Failed to fetch user" });
+  }
 });
 
-//Create a New Bid
-app.post("/api/bids", (req, res) => {
-  const newBid = req.body;
-  connection.query("INSERT INTO bids SET ?", newBid, (err, result) => {
-    if (err) {
-      console.error("Error creating bid:", err);
-      res.status(500).json({ error: "Failed to create bid" });
-      return;
-    }
-    res
-      .status(201)
-      .json({ message: "Bid created successfully", id: result.insertId });
-  });
-});
-
-// Partially update a specific bid by ID
-app.patch("/api/bids/:id", (req, res) => {
-  const bidId = req.params.id;
+// UPDATE a specific user by ID
+app.patch("/api/users/:id", async (req, res) => {
+  const userId = req.params.id;
   const updates = req.body;
 
   // Validate if there are any updates to apply
   if (Object.keys(updates).length === 0) {
-    res.status(400).json({ error: "No updates provided" });
-    return;
+    return res.status(400).json({ error: "No updates provided" });
   }
 
-  // Construct SQL query to update bid fields based on provided updates
-  const updateFields = [];
-  const values = [];
+  try {
+    // Construct SQL query to update user fields based on provided updates
+    const updateFields = [];
+    const values = [];
 
-  for (const key in updates) {
-    updateFields.push(`${key} = ?`);
-    values.push(updates[key]);
+    for (const key in updates) {
+      updateFields.push(`${key} = ?`);
+      values.push(updates[key]);
+    }
+
+    const updateQuery = knex("users").where({ id: userId }).update(updates);
+
+    // Execute the SQL query to update the user
+    const result = await updateQuery;
+
+    if (result === 0) {
+      return res.status(404).json({ error: "user not found" });
+    }
+
+    return res.json({ message: "User updated successfully" });
+  } catch (err) {
+    console.error("Error updating user:", err);
+    return res.status(500).json({ error: "Failed to update user" });
   }
-
-  const updateQuery = `
-        UPDATE bids
-        SET ${updateFields.join(", ")}
-        WHERE bid_id = ?
-      `;
-  values.push(bidId); // Add bidId to the end of values array
-
-  // Execute the SQL query to update the bid
-  connection.query(updateQuery, values, (err, result) => {
-    if (err) {
-      console.error("Error updating bid:", err);
-      res.status(500).json({ error: "Failed to update bid" });
-      return;
-    }
-
-    if (result.affectedRows === 0) {
-      res.status(404).json({ error: "Bid not found" });
-    } else {
-      res.json({ message: "Bid updated successfully" });
-    }
-  });
 });
 
-app.delete("/api/bids/:id", (req, res) => {
-  const bidId = req.params.id;
-  connection.query(
-    "DELETE FROM bids WHERE bid_id = ?",
-    [bidId],
-    (err, result) => {
-      if (err) {
-        console.error("Error deleting bid:", err);
-        res.status(500).json({ error: "Failed to delete bid" });
-        return;
-      }
-      if (result.affectedRows === 0) {
-        res.status(404).json({ error: "Bid not found" });
-        return;
-      }
-      res.json({ message: "Bid deleted successfully" });
+app.delete("/api/users/:id", async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    // Construct SQL query to update user_status to NULL
+    const updateQuery = knex("users")
+      .where({ id: userId })
+      .update({ user_status: "deleted" });
+
+    // Execute the SQL query to update the user_status
+    const result = await updateQuery;
+
+    if (result === 0) {
+      return res.status(404).json({ error: "User not found" });
     }
-  );
+
+    return res.json({ message: "User deleted successfully" });
+  } catch (err) {
+    console.error("Error updating user status:", err);
+    return res
+      .status(500)
+      .json({ error: "Failed to update user status", message: err });
+  }
 });
+
 
 ///////////////////////////End Of BIDS/////////////////////////
 
 ///////////////////////////Users///////////////////////////////
+
+
+// Create a new user
+app.post("/api/users", async (req, res) => {
+  try {
+    const newbid = req.body;
+
+    // Use Knex to perform the insertion
+    const [insertedbid] = await knex("bids").insert(newbid);
+
+    res.status(201).json({
+      message: "Bid created successfully",
+      id: insertedbid,
+    });
+  } catch (err) {
+    console.error("Error creating bid:", err);
+    res.status(500).json({ error: "Failed to create bid" });
+  }
+});
 
 // Retrieve all users
 app.get("/api/users", (req, res) => {
@@ -323,21 +381,6 @@ app.get("/api/users/:userId", (req, res) => {
       res.json(results[0]);
     }
   );
-});
-
-// Create a new user
-app.post("/api/users", (req, res) => {
-  const newUser = req.body;
-  connection.query("INSERT INTO users SET ?", newUser, (err, result) => {
-    if (err) {
-      console.error("Error creating user:", err);
-      res.status(500).json({ error: "Failed to create user" });
-      return;
-    }
-    res
-      .status(201)
-      .json({ message: "User created successfully", userId: result.insertId });
-  });
 });
 
 // Partially update a specific user by ID
@@ -1167,3 +1210,73 @@ app.delete("/api/audit-logs/:id", (req, res) => {
     }
   );
 });
+
+
+
+
+
+
+
+
+
+
+//////////////AUTH////////////////////////////////
+
+// POST route for user login
+app.post('/api/auth/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  console.log(req.body);
+
+
+  try {
+    // Check if user with the provided email exists
+    const user = await knex.raw('SELECT id, email FROM users WHERE email = ?', [email])
+    .then(result => result.rows[0]);
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Password is correct; create session or token for authentication
+    // Here you can generate a JWT token and send it back to the client
+
+    res.json({ message: 'Login successful', user });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: true, message: error, code: 4 });
+  }
+});
+
+// POST route for user registration
+app.post('/register', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Check if user with the provided email already exists
+    const existingUser = await knex('users').where({ email }).first();
+    if (existingUser) {
+      return res.status(400).json({ error: 'User already exists' });
+    }
+
+    // Hash the password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // Create new user
+    await knex('users').insert({ email, password_hash: passwordHash });
+
+    res.json({ message: 'User registered successfully' });
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+//////////////End Of AUTH////////////////////////
+
+
