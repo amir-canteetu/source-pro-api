@@ -1,6 +1,7 @@
 const pool = require('../config/dbConfig');
 
 class Tender {
+    
   static getAllTenders() {
     return new Promise((resolve, reject) => {
       const query = 'SELECT * FROM tenders';
