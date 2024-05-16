@@ -1,38 +1,51 @@
-// controllers/tenderController.js
-
 const Tender = require('../models/tenderModel');
 
-exports.getAllTenders = (req, res) => {
-  Tender.getAllTenders(tenders => {
+exports.getAllTenders = async (req, res, next) => {
+  try {
+    const tenders = await Tender.getAllTenders();
     res.json(tenders);
-  });
+  } catch (error) {
+    next(error);
+  }
 };
 
-exports.getTenderById = (req, res) => {
+exports.getTenderById = async (req, res, next) => {
   const tenderId = req.params.tenderId;
-  Tender.getTenderById(tenderId, tender => {
+  try {
+    const tender = await Tender.getTenderById(tenderId);
     res.json(tender);
-  });
+  } catch (error) {
+    next(error);
+  }
 };
 
-exports.createTender = (req, res) => {
+exports.createTender = async (req, res, next) => {
   const newTender = req.body;
-  Tender.createTender(newTender, tenderId => {
-    res.status(201).json({ message: 'Tender created successfully', tenderId });
-  });
+  try {
+    const insertId = await Tender.createTender(newTender);
+    res.status(201).json({ message: 'Tender created successfully', tenderId: insertId });
+  } catch (error) {
+    next(error);
+  }
 };
 
-exports.updateTender = (req, res) => {
+exports.updateTender = async (req, res, next) => {
   const tenderId = req.params.tenderId;
   const updatedTender = req.body;
-  Tender.updateTender(tenderId, updatedTender, rowsAffected => {
+  try {
+    const rowsAffected = await Tender.updateTender(tenderId, updatedTender);
     res.json({ message: 'Tender updated successfully', rowsAffected });
-  });
+  } catch (error) {
+    next(error);
+  }
 };
 
-exports.deleteTender = (req, res) => {
+exports.deleteTender = async (req, res, next) => {
   const tenderId = req.params.tenderId;
-  Tender.deleteTender(tenderId, rowsAffected => {
+  try {
+    const rowsAffected = await Tender.deleteTender(tenderId);
     res.json({ message: 'Tender deleted successfully', rowsAffected });
-  });
+  } catch (error) {
+    next(error);
+  }
 };
