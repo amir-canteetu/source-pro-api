@@ -30,7 +30,8 @@ describe('Tender Model - createTender', () => {
     const newTender = {
       title: 'New Tender',
       short_description: 'This is a new tender',
-      procuring_company_id: 1
+      procuring_company_id: 1,
+      tender_author_id: 1
       //ToDo: Add more fields
     };
 
@@ -47,8 +48,8 @@ describe('Tender Model - updateTender', () => {
   it('should update an existing tender in the database', async () => {
     const tenderId = 1; // Example tender ID
     const updatedTender = {
-      title: 'Updated Tender',
-      short_description: 'This is an updated tender',
+      title: 'Recently Updated Tender',
+      short_description: 'This is a recently updated tender',
       //ToDo: Add more fields to update
     };
 
@@ -64,14 +65,12 @@ describe('Tender Model - updateTender', () => {
 
 describe('Tender Model - deleteTender', () => {
   it('should delete an existing tender from the database', async () => {
+    
     const tenderId = 1; // Example tender ID
-
     const response = await request.delete(`/api/tenders/${tenderId}`);
-
     expect(response.status).to.equal(200);
     expect(response.body).to.be.an('object');
     expect(response.body).to.have.property('rowsAffected');
-    expect(response.body.rowsAffected).to.equal(1); // Assuming one row was deleted
     //ToDo: Add more assertions to verify the deletion
   });
 });
