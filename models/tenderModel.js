@@ -57,12 +57,21 @@ class Tender {
 
   static deleteTender(tenderId) {
     return new Promise((resolve, reject) => {
-      const query = 'DELETE FROM tenders WHERE id = ?';
-      pool.query(query, [tenderId], (error, results) => {
+      // Update status of related bids to "pending"
+      const updateBidsQuery = 'UPDATE bids SET status = ? WHERE tender_id = ?';
+      pool.query(updateBidsQuery, ['pending', tenderId], (error, updateResults) => {
         if (error) {
           reject(error);
         } else {
-          resolve(results.affectedRows);
+          // After updating bid statuses, update tender status to "closed"
+          const updateTenderQuery = 'UPDATE tenders SET tender_status = ? WHERE tender_id = ?';
+          pool.query(updateTenderQuery, ['closed', tenderId], (error, updateTenderResults) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(updateTenderResults.affectedRows);
+            }
+          });
         }
       });
     });
