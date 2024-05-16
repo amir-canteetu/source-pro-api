@@ -1,4 +1,4 @@
-const mysql = require("mysql2");
+import mysql from 'mysql2';
 
 const dbConfig = {
   host: '192.168.1.213',
@@ -10,4 +10,4 @@ const dbConfig = {
 
 const pool = mysql.createPool(dbConfig);
 
-module.exports = pool;
+export default pool;
