@@ -1,40 +1,70 @@
-// models/userModel.js
-
 import pool from '../config/dbConfig.js';
 
 class User {
-  static getAllUsers(callback) {
-    pool.query('SELECT * FROM users', (error, results) => {
-      if (error) throw error;
-      callback(results);
+
+  static getAllUsers() {
+    return new Promise((resolve, reject) => {
+      const query = 'SELECT * FROM users';
+      pool.query(query, (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results);
+        }
+      });
     });
   }
 
-  static getUserById(userId, callback) {
-    pool.query('SELECT * FROM users WHERE user_id = ?', userId, (error, results) => {
-      if (error) throw error;
-      callback(results[0]);
+  static getUserById(userId) {
+    return new Promise((resolve, reject) => {
+      const query = 'SELECT * FROM users WHERE user_id = ?';
+      pool.query(query, [userId], (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results[0]);
+        }
+      });
     });
   }
 
-  static createUser(newUser, callback) {
-    pool.query('INSERT INTO users SET ?', newUser, (error, results) => {
-      if (error) throw error;
-      callback(results.insertId);
+  static createUser(newUser) {
+    return new Promise((resolve, reject) => {
+      const query = 'INSERT INTO users SET ?';
+      pool.query(query, [newUser], (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results.insertId);
+        }
+      });
     });
   }
 
-  static updateUser(userId, updatedUser, callback) {
-    pool.query('UPDATE users SET ? WHERE user_id = ?', [updatedUser, userId], (error, results) => {
-      if (error) throw error;
-      callback(results.changedRows);
+  static updateUser(userId, updatedUser) {
+    return new Promise((resolve, reject) => {
+      const query = 'UPDATE users SET ? WHERE user_id = ?';
+      pool.query(query, [updatedUser, userId], (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results.changedRows);
+        }
+      });
     });
   }
 
-  static deleteUser(userId, callback) {
-    pool.query('DELETE FROM users WHERE user_id = ?', userId, (error, results) => {
-      if (error) throw error;
-      callback(results.affectedRows);
+  static deleteUser(userId) {
+    return new Promise((resolve, reject) => {
+      // Implement deletion logic for the user
+      const deleteQuery = 'DELETE FROM users WHERE user_id = ?';
+      pool.query(deleteQuery, [userId], (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results.affectedRows);
+        }
+      });
     });
   }
 }

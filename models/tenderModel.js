@@ -3,7 +3,6 @@ import pool from '../config/dbConfig.js';
 class Tender {
 
   static getAllTenders() {
-    console.log("Calling Tender.getAllTenders()...");
     return new Promise((resolve, reject) => {
       const query = 'SELECT * FROM tenders';
       pool.query(query, (error, results) => {
