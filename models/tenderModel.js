@@ -3,7 +3,8 @@ const pool = require('../config/dbConfig');
 class Tender {
   static getAllTenders() {
     return new Promise((resolve, reject) => {
-      pool.query('SELECT * FROM tenders', (error, results) => {
+      const query = 'SELECT * FROM tenders';
+      pool.query(query, (error, results) => {
         if (error) {
           reject(error);
         } else {
@@ -15,7 +16,8 @@ class Tender {
 
   static getTenderById(tenderId) {
     return new Promise((resolve, reject) => {
-      pool.query('SELECT * FROM tenders WHERE tender_id = ?', tenderId, (error, results) => {
+      const query = 'SELECT * FROM tenders WHERE id = ?';
+      pool.query(query, [tenderId], (error, results) => {
         if (error) {
           reject(error);
         } else {
@@ -27,7 +29,8 @@ class Tender {
 
   static createTender(newTender) {
     return new Promise((resolve, reject) => {
-      pool.query('INSERT INTO tenders SET ?', newTender, (error, results) => {
+      const query = 'INSERT INTO tenders SET ?';
+      pool.query(query, [newTender], (error, results) => {
         if (error) {
           reject(error);
         } else {
@@ -39,7 +42,8 @@ class Tender {
 
   static updateTender(tenderId, updatedTender) {
     return new Promise((resolve, reject) => {
-      pool.query('UPDATE tenders SET ? WHERE tender_id = ?', [updatedTender, tenderId], (error, results) => {
+      const query = 'UPDATE tenders SET ? WHERE id = ?';
+      pool.query(query, [updatedTender, tenderId], (error, results) => {
         if (error) {
           reject(error);
         } else {
@@ -51,7 +55,8 @@ class Tender {
 
   static deleteTender(tenderId) {
     return new Promise((resolve, reject) => {
-      pool.query('DELETE FROM tenders WHERE tender_id = ?', tenderId, (error, results) => {
+      const query = 'DELETE FROM tenders WHERE id = ?';
+      pool.query(query, [tenderId], (error, results) => {
         if (error) {
           reject(error);
         } else {
