@@ -1,16 +1,14 @@
-const { body, validationResult } = require('express-validator');
-const Tender = require('../models/tenderModel');
+import { body, validationResult } from 'express-validator';
+import Tender from '../models/tenderModel.js';
 
 // Validation and sanitization middleware functions
 const validateTender = [
-  // Example validations for 'createTender' endpoint
   body('title').notEmpty().withMessage('Title is required').trim().escape(),
   body('short_description').optional().isLength({ max: 255 }).withMessage('Short description must be less than 255 characters').trim().escape(),
   body('deadline').optional().isISO8601().toDate().withMessage('Invalid deadline format'),
-   
 ];
 
-getAllTenders = async (req, res, next) => {
+const getAllTenders = async (req, res, next) => {
   try {
     const tenders = await Tender.getAllTenders();
     res.json(tenders);
@@ -19,7 +17,7 @@ getAllTenders = async (req, res, next) => {
   }
 };
 
-getTenderById = async (req, res, next) => {
+const getTenderById = async (req, res, next) => {
   const tenderId = req.params.tenderId;
   try {
     const tender = await Tender.getTenderById(tenderId);
@@ -29,10 +27,9 @@ getTenderById = async (req, res, next) => {
   }
 };
 
-createTender = [
-  validateTender, // Apply input validation middleware
+const createTender = [
+  validateTender,
   async (req, res, next) => {
-    // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -45,13 +42,12 @@ createTender = [
     } catch (error) {
       next(error);
     }
-  }
+  },
 ];
 
-updateTender = [
-  validateTender, // Apply input validation middleware
+const updateTender = [
+  validateTender,
   async (req, res, next) => {
-    // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -65,10 +61,10 @@ updateTender = [
     } catch (error) {
       next(error);
     }
-  }
+  },
 ];
 
-deleteTender = async (req, res, next) => {
+const deleteTender = async (req, res, next) => {
   const tenderId = req.params.tenderId;
   try {
     const rowsAffected = await Tender.deleteTender(tenderId);
@@ -78,10 +74,10 @@ deleteTender = async (req, res, next) => {
   }
 };
 
-module.exports = {
-    getAllTenders,
-    getTenderById,
-    createTender,
-    updateTender,
-    deleteTender
-  };
+export {
+  getAllTenders,
+  getTenderById,
+  createTender,
+  updateTender,
+  deleteTender,
+};

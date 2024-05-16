@@ -1,13 +1,12 @@
-// routes/tenderRoutes.js
+import express from 'express';
+import { getAllTenders, getTenderById, createTender, updateTender, deleteTender } from '../controllers/tenderController.js';
 
-const express = require('express');
-const tenderController = require('../controllers/tenderController');
 const router = express.Router();
 
-router.get('/', tenderController.getAllTenders);
-router.get('/:tenderId', tenderController.getTenderById);
-router.post('/', tenderController.createTender);
-router.put('/:tenderId', tenderController.updateTender);
-router.delete('/:tenderId', tenderController.deleteTender);
+router.get('/', getAllTenders);
+router.get('/:tenderId', getTenderById);
+router.post('/', createTender);
+router.put('/:tenderId', updateTender);
+router.delete('/:tenderId', deleteTender);
 
-module.exports = router;
+export default router;

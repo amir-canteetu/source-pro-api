@@ -1,6 +1,6 @@
 // models/userModel.js
 
-const pool = require('../config/dbConfig');
+import pool from '../config/dbConfig.js';
 
 class User {
   static getAllUsers(callback) {
@@ -39,4 +39,4 @@ class User {
   }
 }
 
-module.exports = User;
+export default User;

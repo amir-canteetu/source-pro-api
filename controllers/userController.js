@@ -1,38 +1,83 @@
-// controllers/userController.js
+import User from '../models/userModel.js';
+import { body, validationResult } from 'express-validator';
 
-const User = require('../models/userModel');
+// Validation and sanitization middleware functions for user endpoints
+const validateUser = [
+  body('name').notEmpty().withMessage('Name is required').trim().escape(),
+  body('email').isEmail().withMessage('Invalid email format').trim().escape(),
+  body('password').notEmpty().withMessage('Password is required').trim().escape(),
+];
 
-exports.getAllUsers = (req, res) => {
-  User.getAllUsers(users => {
+const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.getAllUsers();
     res.json(users);
-  });
+  } catch (error) {
+    next(error);
+  }
 };
 
-exports.getUserById = (req, res) => {
+const getUserById = async (req, res, next) => {
   const userId = req.params.userId;
-  User.getUserById(userId, user => {
+  try {
+    const user = await User.getUserById(userId);
     res.json(user);
-  });
+  } catch (error) {
+    next(error);
+  }
 };
 
-exports.createUser = (req, res) => {
-  const newUser = req.body;
-  User.createUser(newUser, userId => {
-    res.status(201).json({ message: 'User created successfully', userId });
-  });
-};
+const createUser = [
+  validateUser,
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-exports.updateUser = (req, res) => {
+    const newUser = req.body;
+    try {
+      const userId = await User.createUser(newUser);
+      res.status(201).json({ message: 'User created successfully', userId });
+    } catch (error) {
+      next(error);
+    }
+  },
+];
+
+const updateUser = [
+  validateUser,
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const userId = req.params.userId;
+    const updatedUser = req.body;
+    try {
+      const rowsAffected = await User.updateUser(userId, updatedUser);
+      res.json({ message: 'User updated successfully', rowsAffected });
+    } catch (error) {
+      next(error);
+    }
+  },
+];
+
+const deleteUser = async (req, res, next) => {
   const userId = req.params.userId;
-  const updatedUser = req.body;
-  User.updateUser(userId, updatedUser, rowsAffected => {
-    res.json({ message: 'User updated successfully', rowsAffected });
-  });
-};
-
-exports.deleteUser = (req, res) => {
-  const userId = req.params.userId;
-  User.deleteUser(userId, rowsAffected => {
+  try {
+    const rowsAffected = await User.deleteUser(userId);
     res.json({ message: 'User deleted successfully', rowsAffected });
-  });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export {
+  getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser,
 };
