@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import supertest from 'supertest';
-import app from '../app';
+import app from '../../app.js';
 
 const request = supertest(app);
 
@@ -30,6 +30,7 @@ describe('Tender Model - createTender', () => {
     const newTender = {
       title: 'New Tender',
       short_description: 'This is a new tender',
+      procuring_company_id: 1
       //ToDo: Add more fields
     };
 
