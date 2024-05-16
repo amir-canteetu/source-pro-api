@@ -1,4 +1,4 @@
-const { validationResult } = require('express-validator');
+const { body, validationResult } = require('express-validator');
 const Tender = require('../models/tenderModel');
 
 // Validation and sanitization middleware functions
@@ -10,7 +10,7 @@ const validateTender = [
    
 ];
 
-exports.getAllTenders = async (req, res, next) => {
+getAllTenders = async (req, res, next) => {
   try {
     const tenders = await Tender.getAllTenders();
     res.json(tenders);
@@ -19,7 +19,7 @@ exports.getAllTenders = async (req, res, next) => {
   }
 };
 
-exports.getTenderById = async (req, res, next) => {
+getTenderById = async (req, res, next) => {
   const tenderId = req.params.tenderId;
   try {
     const tender = await Tender.getTenderById(tenderId);
@@ -29,7 +29,7 @@ exports.getTenderById = async (req, res, next) => {
   }
 };
 
-exports.createTender = [
+createTender = [
   validateTender, // Apply input validation middleware
   async (req, res, next) => {
     // Check for validation errors
@@ -48,7 +48,7 @@ exports.createTender = [
   }
 ];
 
-exports.updateTender = [
+updateTender = [
   validateTender, // Apply input validation middleware
   async (req, res, next) => {
     // Check for validation errors
@@ -68,7 +68,7 @@ exports.updateTender = [
   }
 ];
 
-exports.deleteTender = async (req, res, next) => {
+deleteTender = async (req, res, next) => {
   const tenderId = req.params.tenderId;
   try {
     const rowsAffected = await Tender.deleteTender(tenderId);
@@ -77,3 +77,11 @@ exports.deleteTender = async (req, res, next) => {
     next(error);
   }
 };
+
+module.exports = {
+    getAllTenders,
+    getTenderById,
+    createTender,
+    updateTender,
+    deleteTender
+  };
