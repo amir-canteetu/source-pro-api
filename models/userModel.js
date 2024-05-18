@@ -67,6 +67,20 @@ class User {
       });
     });
   }
+
+  static findUserByEmail(email) {
+    return new Promise((resolve, reject) => {
+      const query = 'SELECT * FROM users WHERE email = ?';
+      pool.query(query, [email], (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results[0]);
+        }
+      });
+    });
+  }
+
 }
 
 export default User;
