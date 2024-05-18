@@ -7,8 +7,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Read the private key file
-const privateKey = fs.readFileSync(path.join(__dirname, '../config/keys/ec_private.pem'), 'utf8');
+const publicKey = fs.readFileSync(path.join(__dirname, '../config/keys/ec_public.pem'), 'utf8');
 
 const authenticateJWT = (req, res, next) => {
   const authHeader = req.headers.authorization;
