@@ -1,2 +1,4 @@
 config/dbConfig.js
 config/
+curl
+/nbproject/private/
