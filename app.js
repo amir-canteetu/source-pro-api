@@ -19,7 +19,7 @@ app.use('/api/auth', authRoutes); // Authentication routes
 app.use('/api/users', authenticateJWT, userRoutes); // User routes with JWT authentication
 app.use('/api/tenders', authenticateJWT,tenderRoutes); // Mount tender routes under /api/tenders
 
-// Error handling middleware (example)
+// Error handling 
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');

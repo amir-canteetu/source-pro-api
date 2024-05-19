@@ -18,12 +18,13 @@ const authenticateJWT = (req, res, next) => {
         if (err.name === 'TokenExpiredError') {
           return res.status(401).json({ message: 'Token expired' });
         }
-        return res.sendStatus(403);
+        return res.status(403).json({ message: 'Forbidden' });
       }
       req.user = user;
       next();
     });
-    res.sendStatus(401);
+  } else {
+    return res.status(401).json({ message: 'Authorization header missing' });
   }
 };
 
