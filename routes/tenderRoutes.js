@@ -6,7 +6,7 @@ const router = express.Router();
 router.get('/', getAllTenders);
 router.get('/:tenderId', getTenderById);
 router.post('/', createTender);
-router.put('/:tenderId', updateTender);
+router.patch('/:tenderId', updateTender);
 router.delete('/:tenderId', deleteTender);
 
 export default router;
