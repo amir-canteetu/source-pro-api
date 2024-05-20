@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import fs from 'fs';
+import _ from 'lodash';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import User from '../models/userModel.js';
@@ -42,7 +43,10 @@ const login = [
 
       // Sign the token
       const token = jwt.sign(payload, privateKey, { algorithm: 'ES256', expiresIn: '1h' });
-      res.json({ token });
+
+      const userWithoutSensitiveInfo = _.omit(user, ['password_hash', 'bio']);
+      res.json({ token:token, user: userWithoutSensitiveInfo});
+
     } catch (error) {
       res.status(500).json({ message: 'Internal server error', error });
     }
@@ -77,5 +81,6 @@ const register = [
       }
     }
   ];
+ 
 
 export { login, register };
