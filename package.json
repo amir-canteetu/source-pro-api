@@ -5,8 +5,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "jest",
     "start": "nodemon app.js"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    }
   },
   "keywords": [],
   "author": "",
@@ -24,8 +29,11 @@
     "mysql2": "^3.9.7"
   },
   "devDependencies": {
-    "chai": "^5.1.1",
-    "mocha": "^10.4.0",
+    "@babel/core": "^7.24.5",
+    "@babel/preset-env": "^7.24.5",
+    "@babel/preset-react": "^7.24.1",
+    "@babel/register": "^7.23.7",
+    "jest": "^29.7.0",
     "nodemon": "^3.1.0",
     "supertest": "^7.0.0"
   }
