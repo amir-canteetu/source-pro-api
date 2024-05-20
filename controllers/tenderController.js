@@ -55,7 +55,7 @@ const updateTender = [
 
     const tenderId = req.params.tenderId;
     const updatedTender = req.body;
-    try {
+    try { 
       const rowsAffected = await Tender.updateTender(tenderId, updatedTender);
       res.json({ message: 'Tender updated successfully', rowsAffected });
     } catch (error) {
