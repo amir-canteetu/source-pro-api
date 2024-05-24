@@ -3,7 +3,8 @@ import express from 'express';
 import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import authenticateJWT from './middleware/authMiddleware.js';
-import tenderRoutes from './routes/tenderRoutes.js'; // Import tender routes
+import tenderRoutes from './routes/tenderRoutes.js';  
+import companyRoutes from './routes/companyRoutes.js';  
 import bodyParser from 'body-parser';
 import cors from 'cors';
 
@@ -17,7 +18,8 @@ app.use(bodyParser.json());
 // Routes
 app.use('/api/auth', authRoutes); // Authentication routes
 app.use('/api/users', authenticateJWT, userRoutes); // User routes with JWT authentication
-app.use('/api/tenders', authenticateJWT,tenderRoutes); // Mount tender routes under /api/tenders
+app.use('/api/tenders', authenticateJWT,tenderRoutes); 
+app.use('/api/companies', authenticateJWT,companyRoutes); 
 
 // Error handling 
 app.use((err, req, res, next) => {
