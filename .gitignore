@@ -1,5 +1,4 @@
-config/dbConfig.js
-config/
+config/keys/
 curl
 /nbproject/private/
 /node_modules
