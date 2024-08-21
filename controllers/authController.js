@@ -56,7 +56,14 @@ const login = [
 const register = [
 
     body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
-    body('password').isString().trim().isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+    body('password')
+    .isString()
+    .trim()
+    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
+    .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter')
+    .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter')
+    .matches(/\d/).withMessage('Password must contain at least one digit')
+    .matches(/[\W_]/).withMessage('Password must contain at least one special character (e.g., @, #, $, etc.)'),
 
     async (req, res) => {
       const errors = validationResult(req);
