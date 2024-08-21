@@ -3,3 +3,6 @@ config/
 curl
 /nbproject/private/
 /node_modules
+DoThis
+TechSpec
+.env

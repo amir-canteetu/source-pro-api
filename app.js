@@ -8,11 +8,12 @@ import companyRoutes from './routes/companyRoutes.js';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import helmet from "helmet";
+import morgan from 'morgan';
 
 const app               = express();
 const PORT              = process.env.PORT || 3000;
 
-
+app.use(morgan('tiny'));
 
 /*
 const rateLimit = require('express-rate-limit');
@@ -43,11 +44,16 @@ app.use(helmet());
 app.use(cors());
 app.use(bodyParser.json());
 
+app.use('/v1/api/users', (req, res, next) => {
+  //this function will be called on this path only
+  next() 
+})
+
 // Routes
-app.use('/api/auth', authRoutes); // Authentication routes
-app.use('/api/users', authenticateJWT, userRoutes); // User routes with JWT authentication
-app.use('/api/tenders', authenticateJWT,tenderRoutes); 
-app.use('/api/companies', authenticateJWT,companyRoutes); 
+app.use('/v1/api/auth', authRoutes); // Authentication routes
+app.use('/v1/api/users', authenticateJWT, userRoutes); // User routes with JWT authentication
+app.use('/v1/api/tenders', authenticateJWT,tenderRoutes); 
+app.use('/v1/api/companies', authenticateJWT,companyRoutes); 
 
 // Error handling 
 app.use((err, req, res, next) => {
