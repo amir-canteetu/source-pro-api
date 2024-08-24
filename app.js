@@ -9,14 +9,19 @@ import cors from 'cors';
 import helmet from "helmet";
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import fs from 'fs';
 
 dotenv.config();
 
 const app               = express();
 const PORT              = process.env.PORT || 3000;
+const __dirname         = dirname(fileURLToPath(import.meta.url));
 
 // Middleware
-app.use(morgan('tiny'));
+const accessLogStream = fs.createWriteStream(join(__dirname, 'access.log'), { flags: 'a' });
+app.use(morgan('combined', { stream: accessLogStream }));
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
