@@ -30,13 +30,13 @@ const login = [
       const user = await User.findUserByEmail(email);
 
       if (!user) {
-        return res.status(401).json({ message: 'Authentication failed. User not found.' });
+        return res.status(401).json({ message: 'Invalid credentials' });
       }
 
       const isMatch = await bcrypt.compare(password, user.password_hash);
 
       if (!isMatch) {
-        return res.status(401).json({ message: 'Authentication failed. Wrong password.' });
+        return res.status(401).json({ message: 'Invalid credentials' });
       }
 
       const payload = { email: user.email, id: user.id };
@@ -88,6 +88,10 @@ const register = [
       }
     }
   ];
+
+  const logout = (req,res) => {
+
+  };
  
 
-export { login, register };
+export { login, logout, register };

@@ -12,6 +12,7 @@ import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import fs from 'fs';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ const accessLogStream = fs.createWriteStream(join(__dirname, 'access.log'), { fl
 app.use(morgan('combined', { stream: accessLogStream }));
 app.use(helmet());
 app.use(cors());
+app.use(cookieParser);
 app.use(express.json());
 
 // Error handling 
