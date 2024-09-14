@@ -12,6 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const privateKey = fs.readFileSync(path.join(__dirname, '../config/keys/ec_private.pem'), 'utf8');
+const age = 1000 * 60 * 60 *  24;
 
 const login = [
 
@@ -39,13 +40,17 @@ const login = [
         return res.status(401).json({ message: 'Invalid credentials' });
       }
 
-      const payload = { email: user.email, id: user.id };
+      const payload = { id: user.id };
 
       // Sign the token
-      const token = jwt.sign(payload, privateKey, { algorithm: 'ES256', expiresIn: '1h' });
-
+      const token = jwt.sign(payload, privateKey, { algorithm: 'ES256', expiresIn: age });
       const userWithoutSensitiveInfo = _.omit(user, ['password_hash', 'bio']);
-      res.json({ token:token, user: userWithoutSensitiveInfo});
+      res.cookie('authToken', token, {
+          httpOnly: true, //So JS can't access the cookie.
+        //  secure: true, // Only send over HTTPS
+          sameSite: 'Strict', // Prevents CSRF
+          maxAge: age // Cookie expiration (1 day)
+      }).status(200).json({message:"login successful", user: userWithoutSensitiveInfo});      
 
     } catch (error) {
       res.status(500).json({ message: 'Internal server error', error });
@@ -90,7 +95,7 @@ const register = [
   ];
 
   const logout = (req,res) => {
-
+    res.clearCookie('authToken').status(200).json({ message: 'Logout successfull' });
   };
  
 

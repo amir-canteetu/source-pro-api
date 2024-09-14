@@ -25,7 +25,7 @@ const accessLogStream = fs.createWriteStream(join(__dirname, 'access.log'), { fl
 app.use(morgan('combined', { stream: accessLogStream }));
 app.use(helmet());
 app.use(cors());
-app.use(cookieParser);
+app.use(cookieParser());
 app.use(express.json());
 
 // Error handling 
@@ -50,3 +50,7 @@ app.listen(PORT, () => {
 });
 
 export default app;
+
+/*ToDo For Production:
+1. ensure auth cookie is https; see controllers/authController.js
+*/
