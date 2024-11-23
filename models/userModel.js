@@ -35,7 +35,8 @@ class User {
         if (error) {
           reject(error);
         } else {
-          resolve(results.insertId);
+          const { password_hash, ...userWithoutPassword } = newUser; // Exclude password_hash
+          resolve({ ...userWithoutPassword, id: results.insertId });
         }
       });
     });

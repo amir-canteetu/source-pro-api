@@ -1,48 +1,58 @@
-
-import express from 'express';
-import userRoutes from './routes/userRoutes.js';
-import authRoutes from './routes/authRoutes.js';
-import authenticateJWT from './middleware/authMiddleware.js';
-import tenderRoutes from './routes/tenderRoutes.js';  
-import companyRoutes from './routes/companyRoutes.js';  
-import cors from 'cors';
+import express from "express";
+import userRoutes from "./routes/userRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import { verifyToken } from "./middleware/authMiddleware.js";
+import tenderRoutes from "./routes/tenderRoutes.js";
+import companyRoutes from "./routes/companyRoutes.js";
+import cors from "cors";
 import helmet from "helmet";
-import morgan from 'morgan';
-import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import fs from 'fs';
-import cookieParser from 'cookie-parser';
+import morgan from "morgan";
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import fs from "fs";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
-const app               = express();
-const PORT              = process.env.PORT || 3000;
-const __dirname         = dirname(fileURLToPath(import.meta.url));
+const app = express();
+const PORT = process.env.PORT || 3000;
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const accessLogStream = fs.createWriteStream(join(__dirname, "access.log"), {
+  flags: "a",
+});
+const logFormat = process.env.NODE_ENV === "production" ? "combined" : "dev";
+const logStream =
+  process.env.NODE_ENV === "production" ? accessLogStream : undefined;
 
-// Middleware
-const accessLogStream = fs.createWriteStream(join(__dirname, 'access.log'), { flags: 'a' });
-app.use(morgan('combined', { stream: accessLogStream }));
+const corsOptions = {
+  origin: process.env.CLIENT_ORIGIN,
+  methods: "GET,POST",
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
+
+app.use(morgan(logFormat, { stream: logStream }));
 app.use(helmet());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 
-// Error handling 
+// Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
-    message: isProduction ? 'Internal Server Error' : err.message,
+    message: isProduction ? "Internal Server Error" : err.message,
   });
 });
 
 // Routes
-app.use('/v1/api/auth', authRoutes); // Authentication routes
-app.use('/v1/api/users', authenticateJWT, userRoutes); // User routes with JWT authentication
-app.use('/v1/api/tenders', authenticateJWT,tenderRoutes); 
-app.use('/v1/api/companies', authenticateJWT,companyRoutes); 
+app.use("/v1/api/auth", authRoutes); // Authentication routes
+app.use("/v1/api/users", verifyToken, userRoutes); // User routes with JWT authentication
+app.use("/v1/api/tenders", verifyToken, tenderRoutes);
+app.use("/v1/api/companies", verifyToken, companyRoutes);
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === "production";
 
 // Start server
 app.listen(PORT, () => {
@@ -50,7 +60,3 @@ app.listen(PORT, () => {
 });
 
 export default app;
-
-/*ToDo For Production:
-1. ensure auth cookie is https; see controllers/authController.js
-*/

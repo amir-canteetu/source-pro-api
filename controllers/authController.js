@@ -6,13 +6,64 @@ import { fileURLToPath } from 'url';
 import User from '../models/userModel.js';
 import bcrypt from 'bcrypt';
 import { body, validationResult } from 'express-validator';
+import { verifyToken, verifyRole, publicKey, generateAccessToken, generateRefreshToken } from '../middleware/authMiddleware.js';
 
-// Create a __dirname equivalent
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const register = [
 
-const privateKey = fs.readFileSync(path.join(__dirname, '../config/keys/ec_private.pem'), 'utf8');
-const age = 1000 * 60 * 60 *  24;
+    body('email').isEmail().normalizeEmail().withMessage('A valid email is required'),
+    body('password')
+    .isString()
+    .trim()
+    .isLength({ min: 8 }).withMessage('The password must be at least 8 characters long')
+    .matches(/[A-Z]/).withMessage('The password must contain at least one uppercase letter')
+    .matches(/[a-z]/).withMessage('The password must contain at least one lowercase letter')
+    .matches(/\d/).withMessage('The password must contain at least one digit')
+    .matches(/[\W_]/).withMessage('The password must contain at least one special character (e.g., @, #, $, etc.)'),
+    body('username').isString().trim().notEmpty().withMessage('Please enter a username'),
+    body('role').isIn(['supplier', 'buyer']).withMessage('Please specify a valid role: supplier or buyer'),
+
+    async (req, res) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const { username, email, password, role } = req.body;
+      try {
+
+        const existingUser    = await User.findUserByEmail(email);
+        if (existingUser) {
+          return res.status(409).json({ message: 'Email already taken' });
+        }
+
+        const hashedPassword  = await bcrypt.hash(password, 10);
+        const user            = await User.createUser({ username, email, role, password_hash: hashedPassword });
+
+        // Create JWT token with user info
+        const accessToken   = generateAccessToken(user);
+        const refreshToken  = generateRefreshToken(user);
+
+        // Send refresh token as an HTTP-only, secure cookie
+        res.cookie('refresh-token', refreshToken, {
+          httpOnly: true, // Cookie cannot be accessed through the client-side JavaScript
+          secure: process.env.NODE_ENV === 'production', // Only set secure to true in production (HTTPS)
+          sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });
+
+        const userWithoutPsswd = _.pick(user, ['id','username','role','email']);
+        res.json({
+          message: 'Login successful',
+          accessToken,
+          user: user
+        });
+
+      } catch (error) {
+        console.error('Error:', error.stack);
+        res.status(500).json({ message: 'Internal server error', error });
+      }
+    }
+  ];
 
 const login = [
 
@@ -31,7 +82,7 @@ const login = [
       const user = await User.findUserByEmail(email);
 
       if (!user) {
-        return res.status(401).json({ message: 'Invalid credentials' });
+        return res.status(404).json({ message: 'User not found' });
       }
 
       const isMatch = await bcrypt.compare(password, user.password_hash);
@@ -40,17 +91,24 @@ const login = [
         return res.status(401).json({ message: 'Invalid credentials' });
       }
 
-      const payload = { id: user.id };
+      const accessToken   = generateAccessToken(user);
+      const refreshToken  = generateRefreshToken(user);
 
-      // Sign the token
-      const token = jwt.sign(payload, privateKey, { algorithm: 'ES256', expiresIn: age });
-      const userWithoutSensitiveInfo = _.omit(user, ['password_hash', 'bio']);
-      res.cookie('authToken', token, {
-          httpOnly: true, //So JS can't access the cookie.
-        //  secure: true, // Only send over HTTPS
-          sameSite: 'Strict', // Prevents CSRF
-          maxAge: age // Cookie expiration (1 day)
-      }).status(200).json({message:"login successful", user: userWithoutSensitiveInfo});      
+      // Send refresh token as an HTTP-only, secure cookie
+      res.cookie('refresh-token', refreshToken, {
+        httpOnly: true, // Cookie cannot be accessed through the client-side JavaScript
+        secure: process.env.NODE_ENV === 'production', // Only set secure to true in production (HTTPS)
+        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      // Send access token in response body
+      const userWithoutPsswd = _.pick(user, ['id', 'username', 'role', 'email']);
+      res.json({
+        message: 'Login successful',
+        accessToken,
+        user: userWithoutPsswd
+      });
 
     } catch (error) {
       res.status(500).json({ message: 'Internal server error', error });
@@ -58,45 +116,32 @@ const login = [
   }
 ];
 
-const register = [
+const logout = (req,res) => {
+  res.clearCookie('refresh-token'); // Clear refresh token cookie on logout
+  res.json({ message: 'Logged out successfully' });
+};
 
-    body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
-    body('password')
-    .isString()
-    .trim()
-    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
-    .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter')
-    .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter')
-    .matches(/\d/).withMessage('Password must contain at least one digit')
-    .matches(/[\W_]/).withMessage('Password must contain at least one special character (e.g., @, #, $, etc.)'),
+const refreshToken = (req,res) => {
 
-    async (req, res) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-  
-      const { email, password } = req.body;
-      try {
+  const refreshToken = req.cookies['refresh-token'];
 
-        const existingUser = await User.findUserByEmail(email);
-        if (existingUser) {
-          return res.status(400).json({ message: 'Email already taken' });
-        }  
+  if (!refreshToken) {
+    return res.status(401).json({ message: 'No refresh token provided' });
+  }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = await User.createUser({ email, password_hash: hashedPassword });
+  jwt.verify(refreshToken, publicKey, { algorithms: ['ES256'] }, (err, user) => {
 
-        res.status(201).json({ message: 'User registered successfully', user: newUser });
-      } catch (error) {
-        res.status(500).json({ message: 'Internal server error', error });
-      }
+    if (err) {
+      return res.status(403).json({ message: 'Invalid or expired refresh token' });
     }
-  ];
 
-  const logout = (req,res) => {
-    res.clearCookie('authToken').status(200).json({ message: 'Logout successfull' });
-  };
- 
+    const newAccessToken = generateAccessToken(user);
 
-export { login, logout, register };
+    res.json({
+      accessToken: newAccessToken,
+      user: user
+    });
+  });
+};
+
+export { login, logout, register, refreshToken };
