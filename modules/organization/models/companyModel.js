@@ -1,4 +1,4 @@
-import pool from '../config/dbConfig.js';
+import pool from '../../../config/dbConfig.js';
 
 class Company {
 

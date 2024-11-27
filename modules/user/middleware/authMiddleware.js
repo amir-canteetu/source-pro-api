@@ -4,11 +4,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 // Resolve __dirname equivalent
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename  = fileURLToPath(import.meta.url);
+const __dirname   = path.dirname(__filename);
 
-const privateKey          = fs.readFileSync(path.join(__dirname, '../config/keys/ec_private.pem'), 'utf8');
-export const publicKey    = fs.readFileSync(path.join(__dirname, '../config/keys/ec_public.pem'), 'utf8');
+const privateKey          = fs.readFileSync(path.join(__dirname, '../../../config/keys/ec_private.pem'), 'utf8');
+export const publicKey    = fs.readFileSync(path.join(__dirname, '../../../config/keys/ec_public.pem'), 'utf8');
 const age                 = 1000 * 60 * 60 *  24
 
 const accessTokenExpiresIn    = process.env.accessTokenExpiresIn || '15m'

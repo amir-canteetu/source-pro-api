@@ -1,9 +1,9 @@
 import express from "express";
-import userRoutes from "./routes/userRoutes.js";
-import authRoutes from "./routes/authRoutes.js";
-import { verifyToken } from "./middleware/authMiddleware.js";
-import tenderRoutes from "./routes/tenderRoutes.js";
-import companyRoutes from "./routes/companyRoutes.js";
+import userRoutes from "./modules/user/routes/userRoutes.js";
+import authRoutes from "./modules/user/routes/authRoutes.js";
+import { verifyToken } from "./modules/user/middleware/authMiddleware.js";
+import tenderRoutes from "./modules/procurement/routes/tenderRoutes.js";
+import companyRoutes from "./modules/organization/routes/companyRoutes.js";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -38,6 +38,8 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 
+const isProduction = process.env.NODE_ENV === "production";
+
 // Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -51,8 +53,6 @@ app.use("/v1/api/auth", authRoutes); // Authentication routes
 app.use("/v1/api/users", verifyToken, userRoutes); // User routes with JWT authentication
 app.use("/v1/api/tenders", verifyToken, tenderRoutes);
 app.use("/v1/api/companies", verifyToken, companyRoutes);
-
-const isProduction = process.env.NODE_ENV === "production";
 
 // Start server
 app.listen(PORT, () => {
