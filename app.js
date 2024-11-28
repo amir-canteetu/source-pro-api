@@ -4,6 +4,7 @@ import authRoutes from "./modules/user/routes/authRoutes.js";
 import { verifyToken } from "./modules/user/middleware/authMiddleware.js";
 import tenderRoutes from "./modules/procurement/routes/tenderRoutes.js";
 import companyRoutes from "./modules/organization/routes/companyRoutes.js";
+import errorHandler from './middleware/errorHandler.js';
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -15,15 +16,15 @@ import cookieParser from "cookie-parser";
 
 dotenv.config();
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const app             = express();
+const PORT            = process.env.PORT || 3000;
+const isProduction    = process.env.NODE_ENV === "production";
+const __dirname       = dirname(fileURLToPath(import.meta.url));
 const accessLogStream = fs.createWriteStream(join(__dirname, "access.log"), {
   flags: "a",
 });
-const logFormat = process.env.NODE_ENV === "production" ? "combined" : "dev";
-const logStream =
-  process.env.NODE_ENV === "production" ? accessLogStream : undefined;
+const logFormat       = isProduction ? "combined" : "dev";
+const logStream       = isProduction ? accessLogStream : undefined;
 
 const corsOptions = {
   origin: process.env.CLIENT_ORIGIN,
@@ -37,16 +38,7 @@ app.use(helmet());
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
-
-const isProduction = process.env.NODE_ENV === "production";
-
-// Error handling
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    message: isProduction ? "Internal Server Error" : err.message,
-  });
-});
+app.use(errorHandler);
 
 // Routes
 app.use("/v1/api/auth", authRoutes); // Authentication routes

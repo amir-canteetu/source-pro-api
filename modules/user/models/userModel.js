@@ -82,6 +82,19 @@ class User {
     });
   }
 
+  static findRoleIdByRoleName(roleName) {
+    return new Promise((resolve, reject) => {
+      const query = 'SELECT role_id FROM roles WHERE role_name = ?';
+      pool.query(query, [roleName], (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results[0]?.role_id || null);
+        }
+      });
+    });
+  }
+
 }
 
 export default User;

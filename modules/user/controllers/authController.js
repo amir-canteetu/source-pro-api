@@ -1,8 +1,5 @@
 import jwt from 'jsonwebtoken';
-import fs from 'fs';
 import _ from 'lodash';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import User from '../models/userModel.js';
 import bcrypt from 'bcrypt';
 import { body, validationResult } from 'express-validator';
@@ -22,7 +19,7 @@ const register = [
     body('username').isString().trim().notEmpty().withMessage('Please enter a username'),
     body('role').isIn(['supplier', 'buyer']).withMessage('Please specify a valid role: supplier or buyer'),
 
-    async (req, res) => {
+    async (req, res, next) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -36,8 +33,13 @@ const register = [
           return res.status(409).json({ message: 'Email already taken' });
         }
 
+        const role_id         = await User.findRoleIdByRoleName(role);
+        if (!role_id) {
+          return res.status(400).json({ message: 'Invalid role' });
+        }
+
         const hashedPassword  = await bcrypt.hash(password, 10);
-        const user            = await User.createUser({ username, email, role, password_hash: hashedPassword });
+        const user            = await User.createUser({ username, email, role_id, password_hash: hashedPassword });
 
         // Create JWT token with user info
         const accessToken   = generateAccessToken(user);
@@ -59,8 +61,7 @@ const register = [
         });
 
       } catch (error) {
-        console.error('Error:', error.stack);
-        res.status(500).json({ message: 'Internal server error', error });
+        next(error);
       }
     }
   ];
@@ -70,7 +71,7 @@ const login = [
   body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
   body('password').isString().trim().notEmpty().withMessage('Password is required'),
 
-  async (req, res) => {
+  async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -111,7 +112,7 @@ const login = [
       });
 
     } catch (error) {
-      res.status(500).json({ message: 'Internal server error', error });
+      next(error);
     }
   }
 ];
