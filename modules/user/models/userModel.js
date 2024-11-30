@@ -1,10 +1,10 @@
-import pool from '../../../config/dbConfig.js';
+import pool from "../../../config/dbConfig.js";
+import _ from "lodash";
 
 class User {
-
   static getAllUsers() {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM users';
+      const query = "SELECT * FROM users";
       pool.query(query, (error, results) => {
         if (error) {
           reject(error);
@@ -17,7 +17,7 @@ class User {
 
   static getUserById(userId) {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM users WHERE id = ?';
+      const query = "SELECT * FROM users WHERE id = ?";
       pool.query(query, [userId], (error, results) => {
         if (error) {
           reject(error);
@@ -30,12 +30,12 @@ class User {
 
   static createUser(newUser) {
     return new Promise((resolve, reject) => {
-      const query = 'INSERT INTO users SET ?';
+      const query = "INSERT INTO users SET ?";
       pool.query(query, [newUser], (error, results) => {
         if (error) {
           reject(error);
         } else {
-          const { password_hash, ...userWithoutPassword } = newUser; // Exclude password_hash
+          const userWithoutPassword = _.omit(newUser, "password_hash");
           resolve({ ...userWithoutPassword, id: results.insertId });
         }
       });
@@ -44,7 +44,7 @@ class User {
 
   static updateUser(userId, updatedUser) {
     return new Promise((resolve, reject) => {
-      const query = 'UPDATE users SET ? WHERE id = ?';
+      const query = "UPDATE users SET ? WHERE id = ?";
       pool.query(query, [updatedUser, userId], (error, results) => {
         if (error) {
           reject(error);
@@ -58,7 +58,7 @@ class User {
   static deleteUser(userId) {
     return new Promise((resolve, reject) => {
       // Implement deletion logic for the user
-      const deleteQuery = 'DELETE FROM users WHERE id = ?';
+      const deleteQuery = "DELETE FROM users WHERE id = ?";
       pool.query(deleteQuery, [userId], (error, results) => {
         if (error) {
           reject(error);
@@ -71,7 +71,7 @@ class User {
 
   static findUserByEmail(email) {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM users WHERE email = ?';
+      const query = "SELECT * FROM users WHERE email = ?";
       pool.query(query, [email], (error, results) => {
         if (error) {
           reject(error);
@@ -84,7 +84,7 @@ class User {
 
   static findRoleIdByRoleName(roleName) {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT role_id FROM roles WHERE role_name = ?';
+      const query = "SELECT role_id FROM roles WHERE role_name = ?";
       pool.query(query, [roleName], (error, results) => {
         if (error) {
           reject(error);
@@ -94,7 +94,6 @@ class User {
       });
     });
   }
-
 }
 
 export default User;
