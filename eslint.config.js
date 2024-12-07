@@ -12,6 +12,9 @@ export default [
         sourceType: "module", // Enables ESM (import/export)
       },
     },
+    env: {
+      jest: true,
+    },
     rules: {
       "no-unused-vars": "warn", // Warn about declared but unused variables
       "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",

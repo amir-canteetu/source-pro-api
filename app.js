@@ -1,7 +1,7 @@
 import express from "express";
-import userRoutes from "./modules/user/routes/userRoutes.js";
-import authRoutes from "./modules/user/routes/authRoutes.js";
-import { verifyToken } from "./modules/user/middleware/authMiddleware.js";
+import userRoutes from "@userModule/routes/userRoutes.js";
+import authRoutes from "@userModule/routes/authRoutes.js";
+import { verifyToken } from "@userModule/middleware/authMiddleware.js";
 import tenderRoutes from "./modules/procurement/routes/tenderRoutes.js";
 import companyRoutes from "./modules/organization/routes/companyRoutes.js";
 import errorHandler from "./modules/middleware/errorHandler.js";
@@ -41,7 +41,7 @@ app.use(express.json());
 
 // Routes
 app.use("/v1/api/auth", authRoutes); // Authentication routes
-app.use("/v1/api/users", verifyToken, userRoutes); // User routes with JWT authentication
+app.use("/v1/api/users", userRoutes); // User routes with JWT authentication
 app.use("/v1/api/tenders", verifyToken, tenderRoutes);
 app.use("/v1/api/companies", verifyToken, companyRoutes);
 

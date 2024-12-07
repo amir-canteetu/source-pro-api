@@ -1,11 +1,15 @@
-import User from '../models/userModel.js';
-import { body, validationResult } from 'express-validator';
+import User from "../models/userModel.js";
+import { body, validationResult } from "express-validator";
 
 // Validation and sanitization middleware functions for user endpoints
 const validateUser = [
-  body('name').notEmpty().withMessage('Name is required').trim().escape(),
-  body('email').isEmail().withMessage('Invalid email format').trim().escape(),
-  body('password').notEmpty().withMessage('Password is required').trim().escape(),
+  body("name").notEmpty().withMessage("Name is required").trim().escape(),
+  body("email").isEmail().withMessage("Invalid email format").trim().escape(),
+  body("password")
+    .notEmpty()
+    .withMessage("Password is required")
+    .trim()
+    .escape(),
 ];
 
 const getAllUsers = async (req, res, next) => {
@@ -38,7 +42,7 @@ const createUser = [
     const newUser = req.body;
     try {
       const userId = await User.createUser(newUser);
-      res.status(201).json({ message: 'User created successfully', userId });
+      res.status(201).json({ message: "User created successfully", userId });
     } catch (error) {
       next(error);
     }
@@ -46,7 +50,6 @@ const createUser = [
 ];
 
 const updateUser = [
-  validateUser,
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -57,7 +60,7 @@ const updateUser = [
     const updatedUser = req.body;
     try {
       const rowsAffected = await User.updateUser(userId, updatedUser);
-      res.json({ message: 'User updated successfully', rowsAffected });
+      res.json({ message: "User updated successfully", rowsAffected });
     } catch (error) {
       next(error);
     }
@@ -68,16 +71,10 @@ const deleteUser = async (req, res, next) => {
   const userId = req.params.userId;
   try {
     const rowsAffected = await User.deleteUser(userId);
-    res.json({ message: 'User deleted successfully', rowsAffected });
+    res.json({ message: "User deleted successfully", rowsAffected });
   } catch (error) {
     next(error);
   }
 };
 
-export {
-  getAllUsers,
-  getUserById,
-  createUser,
-  updateUser,
-  deleteUser,
-};
+export { getAllUsers, getUserById, createUser, updateUser, deleteUser };
