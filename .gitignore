@@ -6,3 +6,5 @@ DoThis
 TechSpec
 .env
 access.log
+.env.test
+test/.env.test
