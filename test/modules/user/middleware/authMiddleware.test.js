@@ -1,4 +1,4 @@
-import { verifyToken } from "../../../../modules/user/middleware/authMiddleware.js";
+import { verifyToken } from "@userMiddleware/authMiddleware.js";
 import jwt from "jsonwebtoken";
 
 jest.mock("jsonwebtoken"); // Mock the jwt library

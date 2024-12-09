@@ -20,7 +20,14 @@
     },
     "setupFiles": [
       "./test/jest.setup.js"
-    ]
+    ],
+    "moduleNameMapper": {
+      "^@config/(.*)$": "<rootDir>/config/$1",
+      "^@userControllers/(.*)$": "<rootDir>/modules/user/controllers/$1",
+      "^@userModels/(.*)$": "<rootDir>/modules/user/models/$1",
+      "^@middleware/(.*)$": "<rootDir>/modules/middleware/$1",
+      "^@userMiddleware/(.*)$": "<rootDir>/modules/user/middleware/$1"
+    }
   },
   "keywords": [],
   "author": "",
