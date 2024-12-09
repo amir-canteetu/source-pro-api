@@ -2,11 +2,13 @@ import globals from "globals";
 import pluginJs from "@eslint/js";
 import prettier from "eslint-config-prettier";
 
-/** @type {import('eslint').Linter.Config[]} */
 export default [
   {
     languageOptions: {
-      globals: globals.node,
+      globals: {
+        ...globals.node, // Node.js global variables
+        ...globals.jest, // Jest global variables
+      },
       parserOptions: {
         ecmaVersion: "latest", // Latest ECMAScript syntax
         sourceType: "module", // Enables ESM (import/export)

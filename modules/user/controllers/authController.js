@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import _ from "lodash";
-import User from "../models/userModel.js";
+import User from "@userModule/models/userModel.js";
 import bcrypt from "bcrypt";
 import { body, validationResult } from "express-validator";
 import {

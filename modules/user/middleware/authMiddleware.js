@@ -1,20 +1,8 @@
 import jwt from "jsonwebtoken";
 import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 
-// Resolve __dirname equivalent
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const privateKey = fs.readFileSync(
-  path.join(__dirname, "../../../config/keys/ec_private.pem"),
-  "utf8",
-);
-export const publicKey = fs.readFileSync(
-  path.join(__dirname, "../../../config/keys/ec_public.pem"),
-  "utf8",
-);
+const privateKey = fs.readFileSync(process.env.PRIVATE_KEY_PATH, "utf8");
+export const publicKey = fs.readFileSync(process.env.PUBLIC_KEY_PATH, "utf8");
 
 const accessTokenExpiresIn = process.env.accessTokenExpiresIn || "15m";
 const refreshTokenExpiresIn = process.env.refreshTokenExpiresIn || "7d";

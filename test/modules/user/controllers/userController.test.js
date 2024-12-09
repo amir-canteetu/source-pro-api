@@ -1,12 +1,13 @@
 import request from "supertest";
 import express from "express";
-import pool from "@config/dbConfig.js";
-import * as userController from "@userModule/controllers/userController.js";
-import User from "@userModule/models/userModel.js";
+import pool from "../../../../config/dbConfig.js";
+import * as userController from "../../../../modules/user/controllers/userController.js";
+import User from "../../../../modules/user/models/userModel.js";
 import path from "path";
 import { cleanDumpFile, seedDatabase } from "../../../database/seedDatabase";
+import errorHandler from "../../../../modules/middleware/errorHandler.js";
 
-jest.mock("@userModule/models/userModel.js"); // Mock the User model
+jest.mock("../../../../modules/user/models/userModel.js"); // Mock the User model
 
 const app = express();
 app.use(express.json());
@@ -17,6 +18,8 @@ app.get("/users/:userId", userController.getUserById);
 app.post("/users", userController.createUser);
 app.put("/users/:userId", userController.updateUser);
 app.delete("/users/:userId", userController.deleteUser);
+
+app.use(errorHandler);
 
 const sqlDumpPath = path.resolve(
   process.cwd(),
@@ -167,7 +170,7 @@ describe("User Controller Tests", () => {
     User.getAllUsers.mockRejectedValue(new Error("Database Error"));
 
     const response = await request(app).get("/users");
-    console.log(response);
+    expect(User.getAllUsers).toHaveBeenCalledTimes(1);
     expect(response.status).toBe(500);
     expect(response.body.message).toBe("Database Error");
   });

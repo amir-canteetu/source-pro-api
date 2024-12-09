@@ -2,17 +2,14 @@ import pool from "../../../config/dbConfig.js";
 import _ from "lodash";
 
 class User {
-  static getAllUsers() {
-    return new Promise((resolve, reject) => {
-      const query = "SELECT * FROM users";
-      pool.query(query, (error, results) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(results);
-        }
-      });
-    });
+  static async getAllUsers() {
+    const query = "SELECT * FROM userss";
+    try {
+      const [results] = await pool.query(query);
+      return results;
+    } catch (error) {
+      throw error;
+    }
   }
 
   static getUserById(userId) {

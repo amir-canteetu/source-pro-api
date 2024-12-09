@@ -11,14 +11,16 @@
   },
   "lint-staged": {
     "*.js": [
-      "eslint --fix",
       "npx prettier --write"
     ]
   },
   "jest": {
     "transform": {
       "^.+\\.jsx?$": "babel-jest"
-    }
+    },
+    "setupFiles": [
+      "./test/jest.setup.js"
+    ]
   },
   "keywords": [],
   "author": "",
@@ -61,7 +63,7 @@
   },
   "aliases": {
     "@root": ".",
-    "@config": "config/dbConfig.js",
+    "@config": "config/",
     "@userModule": "modules/user"
   }
 }
