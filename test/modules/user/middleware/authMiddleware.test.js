@@ -1,9 +1,4 @@
-import {
-  verifyToken,
-  verifyRole,
-  generateAccessToken,
-  generateRefreshToken,
-} from "@userMiddleware/authMiddleware.js";
+import { verifyToken, verifyRole } from "@userMiddleware/authMiddleware.js";
 import jwt from "jsonwebtoken";
 
 jest.mock("jsonwebtoken", () => ({

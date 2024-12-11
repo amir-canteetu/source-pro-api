@@ -1,5 +1,4 @@
 import {
-  verifyToken,
   verifyRole,
   generateAccessToken,
   generateRefreshToken,
