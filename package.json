@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --setupFiles ./test/jest.setup.js",
+    "test": "jest --setupFiles ./test/jest.setup.js --runInBand",
     "start": "nodemon --loader esm-module-alias/loader --no-warnings app.js",
     "prepare": "husky"
   },
