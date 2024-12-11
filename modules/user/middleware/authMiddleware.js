@@ -9,19 +9,41 @@ const refreshTokenExpiresIn = process.env.refreshTokenExpiresIn || "7d";
 
 // Helper function to generate tokens
 export const generateAccessToken = (user) => {
-  return jwt.sign(
-    { id: user.id, username: user.username, role: user.role },
-    privateKey,
-    { algorithm: "ES256", expiresIn: accessTokenExpiresIn },
-  );
+  try {
+    // Validate user object structure
+    if (!user || !user.id || !user.username || !user.role) {
+      throw new Error(
+        "Invalid user object. Expected an object with 'id', 'username', and 'role' properties.",
+      );
+    }
+
+    // Generate and return the access token
+    return jwt.sign(
+      { id: user.id, username: user.username, role: user.role },
+      privateKey,
+      { algorithm: "ES256", expiresIn: accessTokenExpiresIn },
+    );
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const generateRefreshToken = (user) => {
-  return jwt.sign(
-    { id: user.id, username: user.username, role: user.role },
-    privateKey,
-    { algorithm: "ES256", expiresIn: refreshTokenExpiresIn },
-  );
+  try {
+    if (!user || !user.id || !user.username || !user.role) {
+      throw new Error(
+        "Invalid user object. Expected an object with 'id', 'username', and 'role' properties.",
+      );
+    }
+
+    return jwt.sign(
+      { id: user.id, username: user.username, role: user.role },
+      privateKey,
+      { algorithm: "ES256", expiresIn: refreshTokenExpiresIn },
+    );
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const verifyToken = (req, res, next) => {
@@ -33,7 +55,7 @@ export const verifyToken = (req, res, next) => {
   jwt.verify(token, publicKey, { algorithms: ["ES256"] }, (err, decoded) => {
     if (err) {
       return res
-        .status(401)
+        .status(403)
         .json({ message: "Invalid or expired access token" });
     }
 
