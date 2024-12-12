@@ -1,9 +1,9 @@
-import {
+const jwt = require("jsonwebtoken");
+const {
   verifyRole,
   generateAccessToken,
   generateRefreshToken,
-} from "@userMiddleware/authMiddleware.js";
-import jwt from "jsonwebtoken";
+} = require("@userMiddleware/authMiddleware.js");
 
 describe("authenticate middleware", () => {
   let req, res, next;

@@ -1,13 +1,13 @@
-import jwt from "jsonwebtoken";
-import _ from "lodash";
-import User from "@userModule/models/userModel.js";
-import bcrypt from "bcrypt";
-import { body, validationResult } from "express-validator";
-import {
+const jwt = require("jsonwebtoken");
+const _ = require("lodash");
+const User = require("@userModule/models/userModel.js");
+const bcrypt = require("bcrypt");
+const { body, validationResult } = require("express-validator");
+const {
   publicKey,
   generateAccessToken,
   generateRefreshToken,
-} from "../middleware/authMiddleware.js";
+} = require("../middleware/authMiddleware.js");
 
 const register = [
   body("email")
@@ -70,10 +70,10 @@ const register = [
 
       // Send refresh token as an HTTP-only, secure cookie
       res.cookie("refresh-token", refreshToken, {
-        httpOnly: true, // Cookie cannot be accessed through the client-side JavaScript
-        secure: process.env.NODE_ENV === "production", // Only set secure to true in production (HTTPS)
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
       res.json({
@@ -123,10 +123,10 @@ const login = [
 
       // Send refresh token as an HTTP-only, secure cookie
       res.cookie("refresh-token", refreshToken, {
-        httpOnly: true, // Cookie cannot be accessed through the client-side JavaScript
-        secure: process.env.NODE_ENV === "production", // Only set secure to true in production (HTTPS)
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
       // Send access token in response body
@@ -148,7 +148,7 @@ const login = [
 ];
 
 const logout = (req, res) => {
-  res.clearCookie("refresh-token"); // Clear refresh token cookie on logout
+  res.clearCookie("refresh-token");
   res.json({ message: "Logged out successfully" });
 };
 
@@ -180,4 +180,4 @@ const refreshToken = (req, res) => {
   );
 };
 
-export { login, logout, register, refreshToken };
+module.exports = { login, logout, register, refreshToken };

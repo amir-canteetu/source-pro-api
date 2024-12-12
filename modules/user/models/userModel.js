@@ -1,9 +1,9 @@
-import pool from "../../../config/dbConfig.js";
-import _ from "lodash";
+const pool = require("../../../config/dbConfig.js");
+const _ = require("lodash");
 
 class User {
   static async getAllUsers() {
-    const query = "SELECT * FROM userss";
+    const query = "SELECT * FROM users";
     try {
       const [results] = await pool.query(query);
       return results;
@@ -54,7 +54,6 @@ class User {
 
   static deleteUser(userId) {
     return new Promise((resolve, reject) => {
-      // Implement deletion logic for the user
       const deleteQuery = "DELETE FROM users WHERE id = ?";
       pool.query(deleteQuery, [userId], (error, results) => {
         if (error) {
@@ -93,4 +92,4 @@ class User {
   }
 }
 
-export default User;
+module.exports = User;

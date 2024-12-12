@@ -1,4 +1,4 @@
-import pool from "../../../config/dbConfig.js";
+const pool = require("../../../config/dbConfig.js");
 
 class Tender {
   static getAllTenders() {
@@ -81,4 +81,4 @@ class Tender {
   }
 }
 
-export default Tender;
+module.exports = Tender;

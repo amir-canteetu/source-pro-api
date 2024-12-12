@@ -1,28 +1,30 @@
-import express from "express";
-import userRoutes from "@userModule/routes/userRoutes.js";
-import authRoutes from "@userModule/routes/authRoutes.js";
-import { verifyToken } from "@userModule/middleware/authMiddleware.js";
-import tenderRoutes from "./modules/procurement/routes/tenderRoutes.js";
-import companyRoutes from "./modules/organization/routes/companyRoutes.js";
-import errorHandler from "./modules/middleware/errorHandler.js";
-import cors from "cors";
-import helmet from "helmet";
-import morgan from "morgan";
-import dotenv from "dotenv";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
-import fs from "fs";
-import cookieParser from "cookie-parser";
+const express = require("express");
+require("module-alias/register");
+const userRoutes = require("@userModule/routes/userRoutes.js");
+const authRoutes = require("@userModule/routes/authRoutes.js");
+const { verifyToken } = require("@userModule/middleware/authMiddleware.js");
+const tenderRoutes = require("./modules/procurement/routes/tenderRoutes.js");
+const companyRoutes = require("./modules/organization/routes/companyRoutes.js");
+const errorHandler = require("./modules/middleware/errorHandler.js");
+const cors = require("cors");
+const helmet = require("helmet");
+const morgan = require("morgan");
+const dotenv = require("dotenv");
+const path = require("path");
+const fs = require("fs");
+const cookieParser = require("cookie-parser");
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const isProduction = process.env.NODE_ENV === "production";
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const accessLogStream = fs.createWriteStream(join(__dirname, "access.log"), {
-  flags: "a",
-});
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "access.log"),
+  {
+    flags: "a",
+  },
+);
 const logFormat = isProduction ? "combined" : "dev";
 const logStream = isProduction ? accessLogStream : undefined;
 
@@ -52,4 +54,4 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-export default app;
+module.exports = app;

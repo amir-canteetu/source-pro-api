@@ -1,23 +1,21 @@
-import jwt from "jsonwebtoken";
-import fs from "fs";
+const jwt = require("jsonwebtoken");
+const fs = require("fs");
 
 const privateKey = fs.readFileSync(process.env.PRIVATE_KEY_PATH, "utf8");
-export const publicKey = fs.readFileSync(process.env.PUBLIC_KEY_PATH, "utf8");
+const publicKey = fs.readFileSync(process.env.PUBLIC_KEY_PATH, "utf8");
 
 const accessTokenExpiresIn = process.env.accessTokenExpiresIn || "15m";
 const refreshTokenExpiresIn = process.env.refreshTokenExpiresIn || "7d";
 
 // Helper function to generate tokens
-export const generateAccessToken = (user) => {
+const generateAccessToken = (user) => {
   try {
-    // Validate user object structure
     if (!user || !user.id || !user.username || !user.role) {
       throw new Error(
         "Invalid user object. Expected an object with 'id', 'username', and 'role' properties.",
       );
     }
 
-    // Generate and return the access token
     return jwt.sign(
       { id: user.id, username: user.username, role: user.role },
       privateKey,
@@ -28,7 +26,7 @@ export const generateAccessToken = (user) => {
   }
 };
 
-export const generateRefreshToken = (user) => {
+const generateRefreshToken = (user) => {
   try {
     if (!user || !user.id || !user.username || !user.role) {
       throw new Error(
@@ -46,7 +44,7 @@ export const generateRefreshToken = (user) => {
   }
 };
 
-export const verifyToken = (req, res, next) => {
+const verifyToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
@@ -64,7 +62,7 @@ export const verifyToken = (req, res, next) => {
   });
 };
 
-export const verifyRole = (role) => {
+const verifyRole = (role) => {
   return (req, res, next) => {
     if (!req.user || req.user.role !== role) {
       return res
@@ -73,4 +71,12 @@ export const verifyRole = (role) => {
     }
     next();
   };
+};
+
+module.exports = {
+  publicKey,
+  generateAccessToken,
+  generateRefreshToken,
+  verifyToken,
+  verifyRole,
 };

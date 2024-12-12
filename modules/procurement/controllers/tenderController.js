@@ -1,11 +1,20 @@
-import { body, validationResult } from 'express-validator';
-import Tender from '../models/tenderModel.js';
+const { body, validationResult } = require("express-validator");
+const Tender = require("../models/tenderModel.js");
 
 // Validation and sanitization middleware functions
 const validateTender = [
-  body('title').notEmpty().withMessage('Title is required').trim().escape(),
-  body('short_description').optional().isLength({ max: 255 }).withMessage('Short description must be less than 255 characters').trim().escape(),
-  body('deadline').optional().isISO8601().toDate().withMessage('Invalid deadline format'),
+  body("title").notEmpty().withMessage("Title is required").trim().escape(),
+  body("short_description")
+    .optional()
+    .isLength({ max: 255 })
+    .withMessage("Short description must be less than 255 characters")
+    .trim()
+    .escape(),
+  body("deadline")
+    .optional()
+    .isISO8601()
+    .toDate()
+    .withMessage("Invalid deadline format"),
 ];
 
 const getAllTenders = async (req, res, next) => {
@@ -38,7 +47,9 @@ const createTender = [
     const newTender = req.body;
     try {
       const insertId = await Tender.createTender(newTender);
-      res.status(201).json({ message: 'Tender created successfully', tenderId: insertId });
+      res
+        .status(201)
+        .json({ message: "Tender created successfully", tenderId: insertId });
     } catch (error) {
       next(error);
     }
@@ -55,9 +66,9 @@ const updateTender = [
 
     const tenderId = req.params.tenderId;
     const updatedTender = req.body;
-    try { 
+    try {
       const rowsAffected = await Tender.updateTender(tenderId, updatedTender);
-      res.json({ message: 'Tender updated successfully', rowsAffected });
+      res.json({ message: "Tender updated successfully", rowsAffected });
     } catch (error) {
       next(error);
     }
@@ -68,13 +79,13 @@ const deleteTender = async (req, res, next) => {
   const tenderId = req.params.tenderId;
   try {
     const rowsAffected = await Tender.deleteTender(tenderId);
-    res.json({ message: 'Tender deleted successfully', rowsAffected });
+    res.json({ message: "Tender deleted successfully", rowsAffected });
   } catch (error) {
     next(error);
   }
 };
 
-export {
+module.exports = {
   getAllTenders,
   getTenderById,
   createTender,

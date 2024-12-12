@@ -1,9 +1,9 @@
-import mysql from "mysql2/promise";
-import fs from "fs/promises";
-import path from "path";
-import dotenv from "dotenv";
-import { exec } from "child_process";
-import util from "util";
+const mysql = require("mysql2/promise");
+const fs = require("fs/promises");
+const path = require("path");
+const dotenv = require("dotenv");
+const { exec } = require("child_process");
+const util = require("util");
 
 dotenv.config({ path: path.resolve(process.cwd(), "test/", ".env.test") });
 
@@ -56,4 +56,4 @@ const seedDatabase = async () => {
   }
 };
 
-export { cleanDumpFile, seedDatabase };
+module.exports = { cleanDumpFile, seedDatabase };

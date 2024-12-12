@@ -1,5 +1,5 @@
-import User from "../models/userModel.js";
-import { body, validationResult } from "express-validator";
+const User = require("../models/userModel.js");
+const { body, validationResult } = require("express-validator");
 
 // Validation and sanitization middleware functions for user endpoints
 const validateUser = [
@@ -80,4 +80,10 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
-export { getAllUsers, getUserById, createUser, updateUser, deleteUser };
+module.exports = {
+  getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser,
+};

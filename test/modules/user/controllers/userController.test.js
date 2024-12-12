@@ -1,8 +1,8 @@
-import request from "supertest";
-import express from "express";
-import * as userController from "@userControllers/userController.js";
-import User from "@userModels/userModel.js";
-import errorHandler from "@middleware/errorHandler.js";
+const request = require("supertest");
+const express = require("express");
+const userController = require("@userControllers/userController.js");
+const User = require("@userModels/userModel.js");
+const errorHandler = require("@middleware/errorHandler.js");
 
 jest.mock("@userModels/userModel.js"); // Mock the User model
 

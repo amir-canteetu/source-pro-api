@@ -1,13 +1,16 @@
 {
   "name": "source-pro-api",
   "version": "1.0.0",
-  "type": "module",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "jest --setupFiles ./test/jest.setup.js --runInBand",
-    "start": "nodemon --loader esm-module-alias/loader --no-warnings app.js",
-    "prepare": "husky"
+    "start": "nodemon app.js",
+    "prepare": "husky",
+    "migrate": "knex migrate:latest",
+    "migrate:rollback": "knex migrate:rollback",
+    "migrate:make": "knex migrate:make",
+    "seed": "knex seed:run"
   },
   "lint-staged": {
     "*.js": [
@@ -15,9 +18,8 @@
     ]
   },
   "jest": {
-    "transform": {
-      "^.+\\.jsx?$": "babel-jest"
-    },
+    "verbose": true,
+    "testEnvironment": "node",
     "setupFiles": [
       "./test/jest.setup.js"
     ],
@@ -30,6 +32,12 @@
       "^@userModule/(.*)$": "<rootDir>/modules/user/$1"
     }
   },
+  "_moduleAliases": {
+    "@root": ".",
+    "@userRoutes": "modules/user/routes/userRoutes.js",
+    "@userControllers": "modules/user/controllers",
+    "@userModule": "modules/user"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -40,13 +48,13 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "esm-module-alias": "^2.2.1",
     "express": "^4.19.2",
     "express-validator": "^7.0.1",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "knex": "^3.1.0",
     "lodash": "^4.17.21",
+    "module-alias": "^2.2.3",
     "morgan": "^1.10.0",
     "mysql2": "^3.9.7"
   },
@@ -68,10 +76,5 @@
     "nodemon": "^3.1.0",
     "prettier": "^3.4.1",
     "supertest": "^7.0.0"
-  },
-  "aliases": {
-    "@root": ".",
-    "@config": "config/",
-    "@userModule": "modules/user"
   }
 }

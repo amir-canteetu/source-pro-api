@@ -1,10 +1,9 @@
-import pool from '../../../config/dbConfig.js';
+const pool = require("../../../config/dbConfig.js");
 
 class Company {
-
   static getAllCompanies() {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM companies';
+      const query = "SELECT * FROM companies";
       pool.query(query, (error, results) => {
         if (error) {
           reject(error);
@@ -17,7 +16,7 @@ class Company {
 
   static getCompanyById(companyId) {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM companies WHERE id = ?';
+      const query = "SELECT * FROM companies WHERE id = ?";
       pool.query(query, [companyId], (error, results) => {
         if (error) {
           reject(error);
@@ -30,7 +29,7 @@ class Company {
 
   static createCompany(newCompany) {
     return new Promise((resolve, reject) => {
-      const query = 'INSERT INTO companies SET ?';
+      const query = "INSERT INTO companies SET ?";
       pool.query(query, [newCompany], (error, results) => {
         if (error) {
           reject(error);
@@ -43,7 +42,7 @@ class Company {
 
   static updateCompany(companyId, updatedCompany) {
     return new Promise((resolve, reject) => {
-      const query = 'UPDATE companies SET ? WHERE id = ?';
+      const query = "UPDATE companies SET ? WHERE id = ?";
       pool.query(query, [updatedCompany, companyId], (error, results) => {
         if (error) {
           reject(error);
@@ -56,7 +55,7 @@ class Company {
 
   static deleteCompany(companyId) {
     return new Promise((resolve, reject) => {
-      const query = 'DELETE FROM companies WHERE id = ?';
+      const query = "DELETE FROM companies WHERE id = ?";
       pool.query(query, [companyId], (error, results) => {
         if (error) {
           reject(error);
@@ -68,4 +67,4 @@ class Company {
   }
 }
 
-export default Company;
+module.exports = Company;
