@@ -1,5 +1,5 @@
-import dotenv from "dotenv";
-import path from "path";
+const dotenv = require("dotenv");
+const path = require("path");
 
 dotenv.config({
   path:
@@ -30,9 +30,7 @@ const knexConfig = {
     seeds: {
       directory: path.resolve(process.cwd(), "db/seeds"),
     },
-    // Enable query logging in development
     debug: process.env.NODE_ENV === "development",
-    // MySQL-specific options
     asyncStackTraces: process.env.NODE_ENV === "development",
     log: {
       warn(message) {
@@ -74,7 +72,6 @@ const knexConfig = {
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      // SSL configuration for production
       ssl:
         process.env.DB_SSL === "true"
           ? {
@@ -95,4 +92,4 @@ const knexConfig = {
   },
 };
 
-export default knexConfig;
+module.exports = knexConfig;
