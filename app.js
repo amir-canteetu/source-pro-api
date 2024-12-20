@@ -26,7 +26,7 @@ const accessLogStream = fs.createWriteStream(
   },
 );
 const logFormat = isProduction ? "combined" : "dev";
-const logStream = isProduction ? accessLogStream : accessLogStream;
+const logStream = isProduction ? accessLogStream : null;
 
 const corsOptions = {
   origin: process.env.CLIENT_ORIGIN,

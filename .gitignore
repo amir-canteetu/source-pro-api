@@ -5,6 +5,6 @@ curl
 DoThis
 TechSpec
 .env
-access.log
+logs/*
 .env.test
 test/.env.test
