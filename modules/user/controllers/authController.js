@@ -8,84 +8,34 @@ const {
   generateAccessToken,
   generateRefreshToken,
 } = require("../middleware/authMiddleware.js");
+const userService = require("../services/userService");
 
-const register = [
-  body("email")
-    .isEmail()
-    .normalizeEmail()
-    .withMessage("A valid email is required"),
-  body("password")
-    .isString()
-    .trim()
-    .isLength({ min: 8 })
-    .withMessage("The password must be at least 8 characters long")
-    .matches(/[A-Z]/)
-    .withMessage("The password must contain at least one uppercase letter")
-    .matches(/[a-z]/)
-    .withMessage("The password must contain at least one lowercase letter")
-    .matches(/\d/)
-    .withMessage("The password must contain at least one digit")
-    .matches(/[\W_]/)
-    .withMessage(
-      "The password must contain at least one special character (e.g., @, #, $, etc.)",
-    ),
-  body("username")
-    .isString()
-    .trim()
-    .notEmpty()
-    .withMessage("Please enter a username"),
-  body("role")
-    .isIn(["supplier", "buyer"])
-    .withMessage("Please specify a valid role: supplier or buyer"),
+const register = async (req, res, next) => {
+  try {
+    const userData = req.body;
+    const user = await userService.createUser(userData); // Handles user creation logic.
 
-  async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
 
-    const { username, email, password, role } = req.body;
-    try {
-      const existingUser = await User.findUserByEmail(email);
-      if (existingUser) {
-        return res.status(409).json({ message: "Email already taken" });
-      }
+    // Set refresh token as HTTP-only cookie
+    res.cookie("refresh-token", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
-      const role_id = await User.findRoleIdByRoleName(role);
-      if (!role_id) {
-        return res.status(400).json({ message: "Invalid role" });
-      }
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const user = await User.createUser({
-        username,
-        email,
-        role_id,
-        password_hash: hashedPassword,
-      });
-
-      // Create JWT token with user info
-      const accessToken = generateAccessToken(user);
-      const refreshToken = generateRefreshToken(user);
-
-      // Send refresh token as an HTTP-only, secure cookie
-      res.cookie("refresh-token", refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
-
-      res.json({
-        message: "Login successful",
-        accessToken,
-        user,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-];
+    // Send response
+    res.status(201).json({
+      message: "User created successfully",
+      accessToken,
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 const login = [
   body("email")
@@ -130,12 +80,7 @@ const login = [
       });
 
       // Send access token in response body
-      const userWithoutPsswd = _.pick(user, [
-        "id",
-        "username",
-        "role",
-        "email",
-      ]);
+      const userWithoutPsswd = _.pick(user, ["id", "role", "email"]);
       res.json({
         message: "Login successful",
         accessToken,

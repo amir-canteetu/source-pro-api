@@ -34,23 +34,23 @@ const getUserById = async (req, res, next) => {
   }
 };
 
-const createUser = [
-  validateUser,
-  async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
+// const createUser = [
+//   validateUser,
+//   async (req, res, next) => {
+//     const errors = validationResult(req);
+//     if (!errors.isEmpty()) {
+//       return res.status(400).json({ errors: errors.array() });
+//     }
 
-    const newUser = req.body;
-    try {
-      const userId = await User.createUser(newUser);
-      res.status(201).json({ message: "User created successfully", userId });
-    } catch (error) {
-      next(error);
-    }
-  },
-];
+//     const newUser = req.body;
+//     try {
+//       const userId = await User.createUser(newUser);
+//       res.status(201).json({ message: "User created successfully", userId });
+//     } catch (error) {
+//       next(error);
+//     }
+//   },
+// ];
 
 const updateUser = [
   async (req, res, next) => {
@@ -83,7 +83,6 @@ const deleteUser = async (req, res, next) => {
 module.exports = {
   getAllUsers,
   getUserById,
-  createUser,
   updateUser,
   deleteUser,
 };

@@ -10,14 +10,14 @@ const refreshTokenExpiresIn = process.env.refreshTokenExpiresIn || "7d";
 // Helper function to generate tokens
 const generateAccessToken = (user) => {
   try {
-    if (!user || !user.id || !user.username || !user.role) {
+    if (!user || !user.id || !user.email || !user.attributes) {
       throw new Error(
-        "Invalid user object. Expected an object with 'id', 'username', and 'role' properties.",
+        "Invalid user object: 'if (!user || !user.id || !user.email || !user.attributes)'  test failed.",
       );
     }
 
     return jwt.sign(
-      { id: user.id, username: user.username, role: user.role },
+      { id: user.id, email: user.email, attributes: user.attributes },
       privateKey,
       { algorithm: "ES256", expiresIn: accessTokenExpiresIn },
     );
@@ -28,14 +28,14 @@ const generateAccessToken = (user) => {
 
 const generateRefreshToken = (user) => {
   try {
-    if (!user || !user.id || !user.username || !user.role) {
+    if (!user || !user.id || !user.email || !user.attributes) {
       throw new Error(
-        "Invalid user object. Expected an object with 'id', 'username', and 'role' properties.",
+        "Invalid user object. Expected an object with 'id', and 'role' properties.",
       );
     }
 
     return jwt.sign(
-      { id: user.id, username: user.username, role: user.role },
+      { id: user.id, email: user.email, attributes: user.attributes },
       privateKey,
       { algorithm: "ES256", expiresIn: refreshTokenExpiresIn },
     );

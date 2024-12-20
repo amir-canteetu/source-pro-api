@@ -20,13 +20,13 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const isProduction = process.env.NODE_ENV === "production";
 const accessLogStream = fs.createWriteStream(
-  path.join(__dirname, "access.log"),
+  path.join(__dirname, "logs/morgan-access.log"),
   {
     flags: "a",
   },
 );
 const logFormat = isProduction ? "combined" : "dev";
-const logStream = isProduction ? accessLogStream : undefined;
+const logStream = isProduction ? accessLogStream : accessLogStream;
 
 const corsOptions = {
   origin: process.env.CLIENT_ORIGIN,

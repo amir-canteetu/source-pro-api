@@ -1,7 +1,0 @@
-export const up = async (knex) => {
-  // Implementation for applying schema changes
-};
-
-export const down = async (knex) => {
-  // Implementation for rolling back schema changes
-};

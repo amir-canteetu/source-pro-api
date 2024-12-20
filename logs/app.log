@@ -1,0 +1,65 @@
+{"level":"info","message":"Attempting to create user with email: raye@gmail.com","timestamp":"2024-12-18T20:01:32.571Z"}
+{"level":"info","message":"Attempting to create user with email: raye@gmail.com","timestamp":"2024-12-18T21:09:45.341Z"}
+{"level":"info","message":"Attempting to create user with email: raye@gmail.com","timestamp":"2024-12-18T21:15:11.655Z"}
+{"level":"info","message":"Attempting to create user with email: raye@gmail.com","timestamp":"2024-12-18T21:19:07.859Z"}
+{"level":"info","message":"Attempting to create user with email: raye@gmail.com","timestamp":"2024-12-18T21:20:31.884Z"}
+{"level":"info","message":"Attempting to create user with email: raye@gmail.com","timestamp":"2024-12-18T21:22:53.688Z"}
+{"level":"info","message":"Attempting to findUserByEmail: raye@gmail.com","timestamp":"2024-12-18T21:22:53.690Z"}
+{"level":"info","message":"Attempting to create user with email: @","timestamp":"2024-12-18T21:24:53.422Z"}
+{"level":"info","message":"Attempting to findUserByEmail: @","timestamp":"2024-12-18T21:24:53.424Z"}
+{"level":"info","message":"Attempting to create user with email: @","timestamp":"2024-12-18T21:33:54.205Z"}
+{"level":"info","message":"No existing user with email: @","timestamp":"2024-12-18T21:33:54.248Z"}
+{"level":"info","message":"Attempting to create user with email: @","timestamp":"2024-12-18T21:47:17.603Z"}
+{"level":"info","message":"No existing user with email: @","timestamp":"2024-12-18T21:47:17.689Z"}
+{"level":"error","message":"Error creating user: Failed to create user: Invalid JSON text: \"Invalid value.\" at position 1 in value for column 'users.attributes'.","timestamp":"2024-12-18T21:47:17.792Z"}
+{"level":"info","message":"Attempting to create user with email: @","timestamp":"2024-12-18T21:50:44.486Z"}
+{"level":"info","message":"No existing user with email: @","timestamp":"2024-12-18T21:50:44.491Z"}
+{"level":"error","message":"Error creating user: Failed to create user: Invalid JSON text: \"Invalid value.\" at position 1 in value for column 'users.attributes'.","timestamp":"2024-12-18T21:50:44.564Z"}
+{"level":"info","message":"Attempting to create user with email: @","timestamp":"2024-12-18T23:34:21.086Z"}
+{"level":"info","message":"No existing user with email: @","timestamp":"2024-12-18T23:34:21.146Z"}
+{"level":"info","message":"User successfully created with ID: undefined","timestamp":"2024-12-18T23:34:21.227Z"}
+{"level":"info","message":"Attempting to create user with email: @","timestamp":"2024-12-18T23:39:20.245Z"}
+{"level":"warn","message":"User creation failed: Email @ is already taken","timestamp":"2024-12-18T23:39:20.323Z"}
+{"level":"error","message":"Error creating user: Cannot read properties of undefined (reading 'status')","timestamp":"2024-12-18T23:39:20.329Z"}
+{"level":"info","message":"Attempting to create user with email: @","timestamp":"2024-12-18T23:41:03.894Z"}
+{"level":"warn","message":"User creation failed: Email @ is already taken","timestamp":"2024-12-18T23:41:03.943Z"}
+{"level":"error","message":"Error creating user: Cannot read properties of undefined (reading 'status')","timestamp":"2024-12-18T23:41:03.944Z"}
+{"level":"info","message":"Attempting to create user with email: amircanteetu@gmail.com","timestamp":"2024-12-18T23:43:24.079Z"}
+{"level":"info","message":"No existing user with email: amircanteetu@gmail.com","timestamp":"2024-12-18T23:43:24.089Z"}
+{"level":"info","message":"User successfully created with ID: undefined","timestamp":"2024-12-18T23:43:24.165Z"}
+{"level":"info","message":"Attempting to create user with email: amircanteetu@gmail.com","timestamp":"2024-12-19T02:52:15.230Z"}
+{"level":"warn","message":"User creation failed: Email amircanteetu@gmail.com is already taken","timestamp":"2024-12-19T02:52:15.303Z"}
+{"level":"error","message":"Error creating user: Cannot read properties of undefined (reading 'status')","timestamp":"2024-12-19T02:52:15.303Z"}
+{"level":"info","message":"Attempting to create user with email: amircanteetu@gmail.com","timestamp":"2024-12-19T02:56:38.370Z"}
+{"level":"info","message":"No existing user with email: amircanteetu@gmail.com","timestamp":"2024-12-19T02:56:38.378Z"}
+{"level":"info","message":"This is the returned User: [object Object]","timestamp":"2024-12-19T02:56:38.503Z"}
+{"level":"info","message":"User successfully created with ID: undefined","timestamp":"2024-12-19T02:56:38.503Z"}
+{"level":"info","message":"Attempting to create user with email: amircanteetu@gmail.com","timestamp":"2024-12-19T02:59:29.197Z"}
+{"level":"warn","message":"User creation failed: Email amircanteetu@gmail.com is already taken","timestamp":"2024-12-19T02:59:29.247Z"}
+{"level":"error","message":"Error creating user: Cannot read properties of undefined (reading 'status')","timestamp":"2024-12-19T02:59:29.248Z"}
+{"level":"info","message":"Attempting to create user with email: amircanteetu@gmail.com","timestamp":"2024-12-19T03:00:34.411Z"}
+{"level":"info","message":"No existing user with email: amircanteetu@gmail.com","timestamp":"2024-12-19T03:00:34.476Z"}
+{"level":"info","message":"This is the returned User: [object Object]","timestamp":"2024-12-19T03:00:34.564Z"}
+{"level":"info","message":"User successfully created with ID: undefined","timestamp":"2024-12-19T03:00:34.565Z"}
+{"level":"info","message":"Attempting to create user with email: amircanteetu@gmail.com","timestamp":"2024-12-19T03:04:55.500Z"}
+{"level":"info","message":"No existing user with email: amircanteetu@gmail.com","timestamp":"2024-12-19T03:04:55.544Z"}
+{"level":"info","message":"This is the returned User: [object Object]","timestamp":"2024-12-19T03:04:55.634Z"}
+{"level":"info","message":"User successfully created with ID: undefined","timestamp":"2024-12-19T03:04:55.636Z"}
+{"level":"info","message":"Attempting to create user with email: amircanteetu@gmail.com","timestamp":"2024-12-19T03:11:25.583Z"}
+{"level":"warn","message":"User creation failed: Email amircanteetu@gmail.com is already taken","timestamp":"2024-12-19T03:11:25.629Z"}
+{"level":"error","message":"Error creating user: Cannot read properties of undefined (reading 'status')","timestamp":"2024-12-19T03:11:25.629Z"}
+{"level":"info","message":"Attempting to create user with email: amigoarcanteetu@gmail.com","timestamp":"2024-12-19T03:21:32.548Z"}
+{"level":"info","message":"No existing user with email: amigoarcanteetu@gmail.com","timestamp":"2024-12-19T03:21:32.597Z"}
+{"level":"info","message":"This is the returned User: [object Object]","timestamp":"2024-12-19T03:21:32.677Z"}
+{"level":"info","message":"User successfully created with ID: undefined","timestamp":"2024-12-19T03:21:32.677Z"}
+{"level":"info","message":"This is the returned User: [object Object]","timestamp":"2024-12-19T03:25:01.309Z"}
+{"level":"error","message":"Error creating user: res is not defined","timestamp":"2024-12-19T03:28:36.422Z"}
+{"level":"error","message":"Error creating user: res is not defined","timestamp":"2024-12-19T03:29:21.243Z"}
+{"level":"info","message":"This is the returned User: [object Object]","timestamp":"2024-12-19T03:29:52.742Z"}
+{"level":"info","message":"This is the returned User: [object Object]","timestamp":"2024-12-19T03:33:19.283Z"}
+{"level":"error","message":"Error creating user: res is not defined","timestamp":"2024-12-19T03:35:15.707Z"}
+{"level":"info","message":"This is the returned User: [object Object]","timestamp":"2024-12-19T14:39:25.989Z"}
+{"level":"error","message":"Error creating user: res is not defined","timestamp":"2024-12-19T14:47:21.545Z"}
+{"level":"info","message":"This is the returned User: [object Object]","timestamp":"2024-12-19T14:48:18.592Z"}
+{"level":"info","message":"This is the returned User: [object Object]","timestamp":"2024-12-19T15:19:52.839Z"}
+{"level":"info","message":"This is the returned User: [object Object]","timestamp":"2024-12-19T15:26:09.189Z"}
