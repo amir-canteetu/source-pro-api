@@ -37,60 +37,43 @@ const register = async (req, res, next) => {
   }
 };
 
-const login = [
-  body("email")
-    .isEmail()
-    .normalizeEmail()
-    .withMessage("Valid email is required"),
-  body("password")
-    .isString()
-    .trim()
-    .notEmpty()
-    .withMessage("Password is required"),
+const login = async (req, res, next) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findUserByEmail(email);
 
-  async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    const { email, password } = req.body;
-    try {
-      const user = await User.findUserByEmail(email);
+    const isMatch = await bcrypt.compare(password, user.password_hash);
 
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      const isMatch = await bcrypt.compare(password, user.password_hash);
-
-      if (!isMatch) {
-        return res.status(401).json({ message: "Invalid credentials" });
-      }
-
-      const accessToken = generateAccessToken(user);
-      const refreshToken = generateRefreshToken(user);
-
-      // Send refresh token as an HTTP-only, secure cookie
-      res.cookie("refresh-token", refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
-
-      // Send access token in response body
-      const userWithoutPsswd = _.pick(user, ["id", "role", "email"]);
-      res.json({
-        message: "Login successful",
-        accessToken,
-        user: userWithoutPsswd,
-      });
-    } catch (error) {
-      next(error);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
     }
-  },
-];
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    // Send refresh token as an HTTP-only, secure cookie
+    res.cookie("refresh-token", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    // Send access token in response body
+    const userWithoutPsswd = _.pick(user, ["id", "role", "email"]);
+    res.json({
+      message: "Login successful",
+      accessToken,
+      user: userWithoutPsswd,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 const logout = (req, res) => {
   res.clearCookie("refresh-token");
